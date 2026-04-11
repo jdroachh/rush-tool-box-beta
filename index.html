@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Neon White Rush Toolbox v3.5.2</title>
+<title>Neon White Rush Toolbox v3.5.3</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -151,9 +151,9 @@
   .medal-amethyst { color:#ce93d8 !important; }
   .medal-emerald  { color:#81c784 !important; }
   /* Medal view div — mirrors textarea styling */
-  .medal-view { display:none; width:100%;background:var(--bg);border:1px solid var(--border);font-family:var(--mono);font-size:16px;padding:12px 16px;resize:vertical;margin-top:6px;min-height:80px;line-height:1.8;overflow-y:auto; }
+  .medal-view { display:none; width:100%;background:var(--bg);border:1px solid var(--border);font-family:var(--mono);font-size:16px;padding:12px 16px;resize:vertical;margin-top:6px;overflow-y:auto;line-height:1.5; }
   .medal-view.visible { display:block; }
-  .medal-view span { display:block; }
+  .medal-view span { display:block; line-height:1.5; margin:0; padding:0; }
   /* Avoid / Excluded Levels */
   .avoid-wrap { display: none; margin-top: 14px; }
   .avoid-wrap.visible { display: block; }
@@ -545,7 +545,7 @@
   </div>
 
 </div>
-<div class="corner-deco">RUSH TOOLBOX // v3.5.2</div>
+<div class="corner-deco">RUSH TOOLBOX // v3.5.3</div>
 <script>
 // ── C# System.Random port ──────────────────────────────────────────────────
 var MBIG = 2147483647;
@@ -2339,7 +2339,7 @@ var stdLevelNames = [];
 // Medal view active state per output id
 var medalViewActive = {};
 
-// Embedded fallback medal data (as of v3.5.2 — updated from NeonLite communitymedals.json)
+// Embedded fallback medal data (as of v3.5.3 — updated from NeonLite communitymedals.json)
 var MEDAL_FALLBACK = {
   "TUT_MOVEMENT": [18199999,17899999,17699999],
   "TUT_SHOOTINGRANGE": [7249999,6799999,6139999],
@@ -2577,6 +2577,8 @@ function toggleMedalView(taId, btnId) {
     var times = ta.value.split('\n');
     var names = getMedalNamesForOutput(taId);
     renderMedalView(taId + '-medal', times, names);
+    // Match div height to current textarea height so layout doesn't shift
+    div.style.height = ta.offsetHeight ? ta.offsetHeight + 'px' : '';
     ta.style.display  = 'none';
     div.style.display = 'block';
     if (btn) { btn.classList.add('active'); btn.textContent = 'MEDALS ON'; }

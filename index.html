@@ -1,0 +1,2489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neon White Rush Toolbox v3.5.1</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0a0a0f;--surface:#111118;--border:#1e1e2e;
+    --accent:#00ff9f;--accent2:#ff3e6c;--text:#c8c8d8;--text-dim:#7070a0;
+    --mono:'Share Tech Mono',monospace;--display:'Bebas Neue',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:var(--mono);min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:linear-gradient(rgba(0,255,159,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,159,0.03) 1px,transparent 1px);
+    background-size:40px 40px;}
+  .container{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:48px 24px 80px;}
+  header{margin-bottom:48px;}
+  .eyebrow{font-size:16px;letter-spacing:4px;color:var(--accent);text-transform:uppercase;margin-bottom:8px;}
+  h1{font-family:var(--display);font-size:clamp(62px,10vw,115px);line-height:0.9;color:#fff;letter-spacing:2px;}
+  h1 span{color:var(--accent);-webkit-text-stroke:1px var(--accent);}
+  .subtitle{margin-top:16px;font-size:17px;color:var(--text-dim);letter-spacing:1px;max-width:480px;line-height:1.7;}
+  .tabs{display:flex;margin-bottom:32px;border-bottom:1px solid var(--border);}
+  .tab-btn{background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);font-family:var(--mono);font-size:17px;letter-spacing:2px;text-transform:uppercase;padding:12px 24px;cursor:pointer;transition:all 0.2s;margin-bottom:-1px;}
+  .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+  .tab-btn:hover:not(.active){color:var(--text);}
+  .tab-panel{display:none;}.tab-panel.active{display:block;}
+  .field{margin-bottom:28px;}
+  .section-divider{border:none;border-top:1px solid var(--border);margin:28px 0 24px;opacity:0.4;}
+  label{display:block;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:#b8b8d0;margin-bottom:8px;}
+  label.section-label{font-size:15px;letter-spacing:3px;font-weight:700;color:var(--text);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.07);}
+  select,input[type="text"],input[type="number"]{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:17px;padding:12px 16px;outline:none;transition:border-color 0.2s;appearance:none;}
+  select:focus,input:focus{border-color:var(--accent);}
+  select option{background:var(--surface);}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .toggle-group{display:flex;align-items:center;}
+  .toggle-group input{display:none;}
+  .toggle-group label{font-size:14px;letter-spacing:1px;color:var(--text);padding:0;margin:0;cursor:default;}
+  
+  
+  .btn{background:var(--accent);color:var(--bg);border:none;font-family:var(--display);font-size:26px;letter-spacing:3px;padding:14px 40px;cursor:pointer;width:100%;margin-top:8px;transition:all 0.15s;}
+  .btn:hover{background:#00ffb3;transform:translateY(-1px);}
+  .btn:active{transform:translateY(0);}
+  .btn-danger{background:var(--accent2);margin-top:8px;}
+  .btn-danger:hover{background:#ff6080;}
+  .result-box{margin-top:32px;border:1px solid var(--border);background:var(--surface);padding:24px;display:none;animation:fadeIn 0.3s ease;}
+  .result-box.visible{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  .result-label{font-size:12px;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;margin-bottom:8px;}
+  .result-value{font-size:34px;color:var(--accent);margin-bottom:16px;}
+  .result-value.error{color:var(--accent2);font-size:17px;line-height:1.5;}
+  .sequence-list{display:flex;flex-direction:column;gap:3px;max-height:380px;overflow-y:auto;padding-right:4px;}
+  .seq-item{background:var(--bg);border:1px solid var(--border);font-size:16px;padding:6px 12px;color:var(--text);white-space:nowrap;display:flex;align-items:center;}
+  .seq-item.highlighted{border-color:var(--accent);color:var(--accent);background:rgba(0,255,159,0.08);}
+  .seq-item.excluded{border-color:#ffaa00;color:#ffaa00;background:rgba(255,170,0,0.07);}
+  .seq-item .num{color:var(--text-dim);margin-right:4px;font-size:12px;}
+  .sequence-list::-webkit-scrollbar{width:4px;}
+  .sequence-list::-webkit-scrollbar-track{background:var(--border);}
+  .sequence-list::-webkit-scrollbar-thumb{background:var(--accent);}
+  .progress-section{margin-top:16px;display:none;}
+  .progress-section.visible{display:block;}
+  .progress-meta{display:flex;justify-content:space-between;margin-bottom:6px;}
+  .progress-pct{font-size:16px;color:var(--accent);letter-spacing:1px;}
+  .progress-speed{font-size:16px;color:var(--text-dim);letter-spacing:1px;}
+  .progress-track{height:4px;background:var(--border);position:relative;overflow:hidden;}
+  .progress-fill{height:100%;background:var(--accent);width:0%;transition:width 0.3s ease;box-shadow:0 0 8px var(--accent);}
+  .progress-track::after{content:'';position:absolute;top:0;left:-50%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,255,159,0.4),transparent);animation:scan 1.5s infinite;}
+  @keyframes scan{from{left:-50%;}to{left:150%;}}
+  .status-text{font-size:16px;color:var(--text-dim);margin-top:10px;min-height:18px;letter-spacing:0.5px;}
+  .hint{font-size:12px;color:var(--text-dim);margin-top:6px;line-height:1.6;}
+  .corner-deco{position:fixed;bottom:24px;right:24px;font-size:12px;letter-spacing:2px;color:var(--text-dim);opacity:0.4;z-index:10;}
+
+  /* Result mode toggle */
+  input[name="order"] { display: none; }
+  input[name="order"]:checked + label { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: bold; }
+  input[name="resultmode"] { display: none; }
+  input[name="resultmode"] + label {
+    flex: 1; text-align: center; padding: 10px 16px;
+    border: 1px solid var(--border); cursor: pointer;
+    font-size: 14px; letter-spacing: 1px; color: var(--text-dim);
+    transition: all 0.2s; margin: 0;
+  }
+  input[name="resultmode"] + label:first-of-type { border-right: none; }
+  input[name="resultmode"]:checked + label {
+    background: var(--accent); color: var(--bg);
+    border-color: var(--accent); font-weight: bold;
+  }
+
+  /* Multi-seed accordion */
+  .multi-result-list { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+  .seed-entry { border: 1px solid var(--border); background: var(--bg); }
+  .seed-entry-header {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .seed-entry-header:hover { background: rgba(0,255,159,0.04); }
+  .seed-num {
+    font-size: 22px; color: var(--accent); font-family: var(--mono); letter-spacing: 1px;
+  }
+  .seed-num-label {
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--text-dim); display: block; margin-bottom: 2px;
+  }
+  .seed-meta-wrap { text-align: right; }
+  .seed-match-label {
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--text-dim); display: block; margin-bottom: 2px;
+  }
+  .seed-match-num { font-size: 18px; color: var(--text); font-family: var(--mono); }
+  .seed-chevron { font-size: 12px; color: var(--text-dim); transition: transform 0.2s; }
+  .seed-copy-btn {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    background: none; border: 1px solid var(--border); color: var(--text-dim);
+    padding: 4px 10px; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  }
+  .seed-copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .seed-copy-btn.copied { border-color: var(--accent); color: var(--accent); }
+  .seed-entry.open .seed-chevron { transform: rotate(180deg); }
+  .seed-entry-body { display: none; border-top: 1px solid var(--border); padding: 12px 16px; }
+  .seed-entry.open .seed-entry-body { display: block; }
+
+  /* Advanced Options */
+  .adv-toggle { display:flex; align-items:center; gap:0; width:100%; background:none; border:none; border-top:1px solid var(--border); border-bottom:1px solid transparent; color:var(--text-dim); font-family:var(--mono); font-size:11px; letter-spacing:2px; text-transform:uppercase; padding:10px 0; cursor:pointer; margin-top:8px; transition:color 0.2s; }
+  .adv-toggle:hover { color:var(--text); }
+  .adv-toggle .adv-arrow { margin-right:10px; display:inline-block; transition:transform 0.2s; font-style:normal; }
+  .adv-toggle.open { color:var(--text); border-bottom-color:var(--border); }
+  .adv-toggle.open .adv-arrow { transform:rotate(90deg); }
+  .adv-body { display:none; padding:16px 0 8px; }
+  .adv-body.visible { display:block; }
+  /* Engine mode toggle */
+  .engine-bar { display:flex; align-items:center; gap:12px; }
+  .engine-bar label { font-size:11px; letter-spacing:2px; color:var(--text-dim); margin:0; padding:0; border:none; text-transform:uppercase; font-weight:400; }
+  .engine-btn { background:none; border:1px solid var(--border); color:var(--text-dim); font-family:var(--mono); font-size:12px; letter-spacing:2px; padding:6px 14px; cursor:pointer; text-transform:uppercase; transition:all 0.15s; }
+  .engine-btn.active { background:var(--accent); color:var(--bg); border-color:var(--accent); font-weight:700; }
+  .engine-btn:disabled { opacity:0.3; cursor:not-allowed; }
+  .engine-btn.gpu-btn.active { background:#a78bfa; border-color:#a78bfa; }
+  .engine-status { font-size:11px; letter-spacing:1px; margin-left:auto; }
+  .engine-status.ready  { color:#a78bfa; }
+  .engine-status.unavail { color:var(--text-dim); }
+  .btn-small.active { background:var(--surface); color:var(--text); border-color:var(--text-dim); }
+  /* Medal colours */
+  .medal-sapphire { color:#4fc3f7 !important; }
+  .medal-amethyst { color:#ce93d8 !important; }
+  .medal-emerald  { color:#81c784 !important; }
+  /* Medal view div — mirrors textarea styling */
+  .medal-view { display:none; width:100%;background:var(--bg);border:1px solid var(--border);font-family:var(--mono);font-size:16px;padding:12px 16px;resize:vertical;margin-top:6px;min-height:80px;line-height:1.8;overflow-y:auto; }
+  .medal-view.visible { display:block; }
+  .medal-view span { display:block; }
+  /* Avoid / Excluded Levels */
+  .avoid-wrap { display: none; margin-top: 14px; }
+  .avoid-wrap.visible { display: block; }
+  /* Force First Level */
+  .force-first-wrap { display: none; margin-top: 14px; }
+  .force-first-wrap.visible { display: block; }
+  .checkbox-row { display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 4px 0; }
+  .checkbox-row input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
+  .checkbox-row span { font-size: 14px; color: var(--text); letter-spacing: 0.5px; }
+/* Small utility buttons (cache bar + copy) */
+  .btn-small {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .btn-small:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-small.danger:hover { border-color: var(--accent2); color: var(--accent2); }
+  .cache-bar { display: flex; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .cache-status { font-size: 11px; letter-spacing: 1px; color: var(--text-dim); }
+  .cache-status.saved { color: var(--accent); }
+  .splits-result { max-height: 400px; overflow-y: auto; }
+  .splits-result::-webkit-scrollbar { width: 4px; }
+  .splits-result::-webkit-scrollbar-track { background: var(--border); }
+  .splits-result::-webkit-scrollbar-thumb { background: var(--accent); }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="eyebrow">// neon white // rush toolbox</div>
+    <h1>RUSH<br><span>TOOL</span><br>BOX</h1>
+    <p class="subtitle" id="page-subtitle">Find or generate level seeds for Neon White Heaven or Hell Rush. Uses the same seeded shuffle as the game engine.</p>
+  </header>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('search',this)">Find Seed</button>
+    <button class="tab-btn" onclick="switchTab('generate',this)">Seed Parser</button>
+    <button class="tab-btn" onclick="switchTab('splits',this)">Splits Updater</button>
+    <button class="tab-btn" onclick="switchTab('standardize',this)">Standardize Splits</button>
+    <button class="tab-btn" onclick="switchTab('timer',this)">Run Timer</button>
+  </div>
+  <div class="tab-panel active" id="tab-search">
+    <div class="row">
+      <div class="field">
+        <label class="section-label">Rush Name</label>
+        <select id="s-rush" onchange="onRushChange('s')">
+          <option value="96">White / Mikey (96 levels)</option>
+          <option value="violet">Violet (8 levels)</option>
+          <option value="red">Red (8 levels)</option>
+          <option value="yellow">Yellow (8 levels)</option>
+        </select>
+      </div>
+      <div class="field" id="search-depth-field">
+        <label class="section-label">Search Depth</label>
+        <input type="number" id="s-depth" value="10" min="1" max="96">
+        <div class="hint">Levels deep to search for your desired levels</div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="section-label">Result Mode</label>
+      <div class="toggle-group" style="margin-bottom:8px;">
+        <input type="radio" name="resultmode" id="mode-first" value="first" checked onchange="toggleResultMode()">
+        <label for="mode-first">First Match</label>
+        <input type="radio" name="resultmode" id="mode-multi" value="multi" onchange="toggleResultMode()">
+        <label for="mode-multi">Find Multiple</label>
+      </div>
+      <div id="maxseeds-wrap" style="display:none;">
+        <input type="number" id="s-maxseeds" value="5" min="2" max="100" style="margin-top:6px;">
+        <div class="hint">Stop after finding this many matching seeds.</div>
+      </div>
+    </div>
+    <div class="field" id="order-matters-field" style="display:none;">
+      <label class="section-label">Order Matters?</label>
+      <div class="toggle-group" style="display:flex;">
+        <input type="radio" name="order" id="o-no" value="0" checked onchange="onOrderChange()">
+        <label for="o-no" style="flex:1;text-align:center;padding:10px;border:1px solid var(--border);cursor:pointer;font-size:14px;letter-spacing:1px;transition:all 0.2s;margin:0;border-right:none;">No &mdash; Any Order</label>
+        <input type="radio" name="order" id="o-yes" value="1" onchange="onOrderChange()">
+        <label for="o-yes" style="flex:1;text-align:center;padding:10px;border:1px solid var(--border);cursor:pointer;font-size:14px;letter-spacing:1px;transition:all 0.2s;margin:0;">Yes &mdash; Exact Order</label>
+      </div>
+    </div>
+    <div class="field">
+      <label class="section-label">Desired Starting Levels</label>
+      <input type="text" id="s-levels" placeholder="e.g. The Third Temple, Absolution, The Clocktower" oninput="syncDepthToLevels()">
+      <div class="hint">Comma-separated level names or numbers (1-indexed). Case insensitive.</div>
+    </div>
+    <hr class="section-divider">
+    <div class="field" id="force-first-field">
+      <label class="section-label">Force First Level</label>
+      <label class="checkbox-row" for="ffl-checkbox">
+        <input type="checkbox" id="ffl-checkbox" onchange="toggleForceFirst()">
+        <span>Pin a specific level to position 1</span>
+      </label>
+      <div class="force-first-wrap" id="ffl-wrap">
+        <input type="text" id="ffl-level" placeholder="e.g. Absolution, TTT, Rico" style="margin-top:8px;">
+        <div class="hint">This level must appear first. Desired Starting Levels must still appear within Search Depth.</div>
+      </div>
+    </div>
+    <div class="field" id="avoid-field" style="margin-top:0;">
+      <label class="section-label">Excluded Levels</label>
+      <label class="checkbox-row" for="avoid-checkbox">
+        <input type="checkbox" id="avoid-checkbox" onchange="toggleAvoid()">
+        <span>Exclude levels from opening positions</span>
+      </label>
+      <div class="avoid-wrap" id="avoid-wrap">
+        <div class="row" style="margin-top:16px;gap:20px;">
+          <div class="field">
+            <label>Exclusion Window</label>
+            <input type="number" id="avoid-depth" value="5" min="1" max="96">
+            <div class="hint">Excluded levels must not appear within this many positions from the start.</div>
+          </div>
+          <div class="field">
+            <label>Excluded Levels</label>
+            <input type="text" id="avoid-levels" placeholder="e.g. Godspeed, Breakthrough, Greenhouse">
+            <div class="hint">Comma-separated. These levels must not appear in the first N positions.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="adv-toggle" id="adv-toggle" onclick="toggleAdvanced()">
+      <em class="adv-arrow">&#9658;</em> Advanced Options
+    </button>
+    <div class="adv-body" id="adv-body">
+      <div class="engine-bar">
+        <label>Search Engine</label>
+        <button class="engine-btn active" id="engine-cpu-btn" onclick="setEngineMode('cpu')">⚙ CPU</button>
+        <button class="engine-btn gpu-btn" id="engine-gpu-btn" onclick="setEngineMode('gpu')" disabled>⚡ GPU</button>
+        <span class="engine-status unavail" id="engine-status">Detecting GPU...</span>
+      </div>
+    </div>
+    <button class="btn" id="search-btn" onclick="startSearch()">FIND SEED</button>
+    <button class="btn btn-danger" id="stop-btn" onclick="stopSearch()" style="display:none">STOP SEARCH</button>
+    <div class="progress-section" id="progress-section">
+      <div class="progress-meta">
+        <span class="progress-pct" id="progress-pct">0%</span>
+        <span class="progress-speed" id="progress-speed"></span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+    <div class="status-text" id="status-text"></div>
+    <div class="result-box" id="search-result">
+      <div class="result-label" id="search-result-label">Found Seeds</div>
+      <div class="multi-result-list" id="multi-result-list"></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="tab-generate">
+    <div class="row">
+      <div class="field">
+        <label class="section-label">Rush Name</label>
+        <select id="g-rush" onchange="onRushChange('g')">
+          <option value="96">White / Mikey (96 levels)</option>
+          <option value="violet">Violet (8 levels)</option>
+          <option value="red">Red (8 levels)</option>
+          <option value="yellow">Yellow (8 levels)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="section-label">Seed</label>
+        <input type="number" id="g-seed" placeholder="e.g. 87921" min="1">
+      </div>
+    </div>
+    <button class="btn" onclick="generateOrder()">PARSE SEED</button>
+    <div class="result-box" id="gen-result">
+      <div class="result-label">Seed</div>
+      <div class="result-value" id="gen-seed-display"></div>
+      <div class="result-label" style="margin-top:8px">Full Level Order</div>
+      <div class="sequence-list" id="gen-sequence"></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="tab-splits">
+    <div class="field">
+      <label class="section-label">Rush Name</label>
+            <select id="sp-rush" onchange="onSplitsRushChange()">
+          <option value="96">White / Mikey (96 levels)</option>
+          <option value="violet">Violet (8 levels)</option>
+          <option value="red">Red (8 levels)</option>
+          <option value="yellow">Yellow (8 levels)</option>
+        </select>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label class="section-label">Gold Splits</label>
+        <textarea id="sp-gold" rows="6" placeholder="Paste one time per line&#10;e.g.&#10;17.993&#10;1:20.730&#10;45.012" style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:16px;padding:12px 16px;outline:none;resize:vertical;transition:border-color 0.2s;"></textarea>
+        <div class="hint">Best individual level times. One per line.</div>
+        <div class="hint" id="sp-gold-hint" style="color:var(--accent2);margin-top:4px;">Paste times in standard level order (Movement first, Absolution last).</div>
+      </div>
+      <div class="field">
+        <label class="section-label">Segment Splits</label>
+        <textarea id="sp-seg" rows="6" placeholder="Paste one time per line&#10;e.g.&#10;17.993&#10;1:20.730&#10;45.012" style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:16px;padding:12px 16px;outline:none;resize:vertical;transition:border-color 0.2s;"></textarea>
+        <div class="hint">Cumulative or segment run times. One per line.</div>
+        <div class="hint" id="sp-seg-hint" style="color:var(--accent2);margin-top:4px;">Paste times in standard level order (Movement first, Absolution last).</div>
+      </div>
+    </div>
+    <div class="cache-bar">
+      <button class="btn-small" onclick="saveSplits()">SAVE SPLITS</button>
+      <button class="btn-small" onclick="loadSplits()">LOAD SAVED</button>
+      <button class="btn-small danger" onclick="clearSplits()">CLEAR SAVED</button>
+      <span class="cache-status" id="cache-status"></span>
+    </div>
+    <div class="field" style="margin-top:20px;">
+      <label class="section-label">Seed Number</label>
+      <input type="number" id="sp-seed" placeholder="e.g. 58685" min="1">
+    </div>
+    <div id="sp-error" style="display:none;color:var(--accent2);font-size:14px;margin-top:12px;line-height:1.6;padding:10px 14px;border:1px solid var(--accent2);"></div>
+    <button class="btn" onclick="generateSplits()">GENERATE SPLITS</button>
+    <div class="result-box" id="splits-result">
+      <div style="display:flex;gap:0;margin-bottom:16px;">
+        <button class="btn-small active" id="sp-fmt-plain" onclick="spSetFormat('plain')" style="flex:1;padding:8px;font-size:12px;">Plain Seconds &mdash; LiveSplit / WSplit</button>
+        <button class="btn-small" id="sp-fmt-mmss" onclick="spSetFormat('mmss')" style="flex:1;padding:8px;font-size:12px;border-left:none;">MM:SS.mmm &mdash; Google Sheets</button>
+      </div>
+      <div class="result-label">Reordered Splits &mdash; Seed <span id="splits-seed-display"></span></div>
+      <div id="splits-gold-wrap" style="display:none;">
+        <div class="result-label" style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;">
+          <span>Gold Splits</span>
+          <button class="btn-small" onclick="copySplits('splits-gold-out')">COPY</button>
+          <button class="btn-small" id="sp-gold-medal-btn" onclick="toggleMedalView('splits-gold-out', 'sp-gold-medal-btn')" style="border-color:#4fc3f7;color:#4fc3f7;">MEDALS</button>
+        </div>
+        <textarea id="splits-gold-out" rows="8" readonly style="width:100%;background:var(--bg);border:1px solid var(--border);color:#ffe066;font-family:var(--mono);font-size:16px;padding:12px 16px;outline:none;resize:vertical;margin-top:6px;"></textarea>
+        <div class="medal-view" id="splits-gold-out-medal"></div>
+      </div>
+      <div id="splits-seg-wrap" style="display:none;">
+        <div class="result-label" style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;">
+          <span>Segment Splits</span>
+          <button class="btn-small" onclick="copySplits('splits-seg-out')">COPY</button>
+          <button class="btn-small" id="sp-seg-medal-btn" onclick="toggleMedalView('splits-seg-out', 'sp-seg-medal-btn')" style="border-color:#4fc3f7;color:#4fc3f7;">MEDALS</button>
+        </div>
+        <textarea id="splits-seg-out" rows="8" readonly style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:16px;padding:12px 16px;outline:none;resize:vertical;margin-top:6px;"></textarea>
+        <div class="medal-view" id="splits-seg-out-medal"></div>
+      </div>
+      <div>
+        <div class="result-label" style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;">
+          <span>Level Order</span>
+          <button class="btn-small" onclick="copySplits('splits-names-out')">COPY</button>
+        </div>
+        <textarea id="splits-names-out" rows="8" readonly style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--accent);font-family:var(--mono);font-size:16px;padding:12px 16px;outline:none;resize:vertical;margin-top:6px;"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tab-standardize">
+    <div class="field">
+      <label class="section-label">Rush Name</label>
+            <select id="std-rush" onchange="onStdRushChange()">
+          <option value="96">White / Mikey (96 levels)</option>
+          <option value="violet">Violet (8 levels)</option>
+          <option value="red">Red (8 levels)</option>
+          <option value="yellow">Yellow (8 levels)</option>
+        </select>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label class="section-label">Gold Splits</label>
+        <textarea id="std-gold" rows="6" placeholder="Paste one time per line&#10;e.g.&#10;17.993&#10;1:20.730&#10;45.012" style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:16px;padding:12px 16px;outline:none;resize:vertical;transition:border-color 0.2s;"></textarea>
+        <div class="hint">Best individual level times. One per line.</div>
+        <div class="hint" id="std-gold-hint" style="color:var(--accent2);margin-top:4px;">Paste times in seed order (the order your seed plays levels).</div>
+      </div>
+      <div class="field">
+        <label class="section-label">Segment Splits</label>
+        <textarea id="std-seg" rows="6" placeholder="Paste one time per line&#10;e.g.&#10;17.993&#10;1:20.730&#10;45.012" style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:16px;padding:12px 16px;outline:none;resize:vertical;transition:border-color 0.2s;"></textarea>
+        <div class="hint">Cumulative or segment run times. One per line.</div>
+        <div class="hint" id="std-seg-hint" style="color:var(--accent2);margin-top:4px;">Paste times in seed order (the order your seed plays levels).</div>
+      </div>
+    </div>
+    <div class="cache-bar">
+      <button class="btn-small" onclick="saveStdSplits()">SAVE SPLITS</button>
+      <button class="btn-small" onclick="loadStdSplits()">LOAD SAVED</button>
+      <button class="btn-small danger" onclick="clearStdSplits()">CLEAR SAVED</button>
+      <span class="cache-status" id="std-cache-status"></span>
+    </div>
+    <div class="field" style="margin-top:20px;">
+      <label class="section-label">Seed Number</label>
+      <input type="number" id="std-seed" placeholder="e.g. 58685" min="1">
+    </div>
+    <div id="std-error" style="display:none;color:var(--accent2);font-size:14px;margin-top:12px;line-height:1.6;padding:10px 14px;border:1px solid var(--accent2);"></div>
+    <button class="btn" onclick="standardizeSplits()">STANDARDIZE SPLITS</button>
+    <div class="result-box" id="std-result">
+      <div style="display:flex;gap:0;margin-bottom:16px;">
+        <button class="btn-small active" id="std-fmt-plain" onclick="stdSetFormat('plain')" style="flex:1;padding:8px;font-size:12px;">Plain Seconds &mdash; LiveSplit / WSplit</button>
+        <button class="btn-small" id="std-fmt-mmss" onclick="stdSetFormat('mmss')" style="flex:1;padding:8px;font-size:12px;border-left:none;">MM:SS.mmm &mdash; Google Sheets</button>
+      </div>
+      <div class="result-label">Standardized Splits &mdash; Seed <span id="std-seed-display"></span></div>
+      <div id="std-gold-wrap" style="display:none;">
+        <div class="result-label" style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;">
+          <span>Gold Splits</span>
+          <button class="btn-small" onclick="copySplits('std-gold-out')">COPY</button>
+          <button class="btn-small" id="std-gold-medal-btn" onclick="toggleMedalView('std-gold-out', 'std-gold-medal-btn')" style="border-color:#4fc3f7;color:#4fc3f7;">MEDALS</button>
+        </div>
+        <textarea id="std-gold-out" rows="8" readonly style="width:100%;background:var(--bg);border:1px solid var(--border);color:#ffe066;font-family:var(--mono);font-size:16px;padding:12px 16px;outline:none;resize:vertical;margin-top:6px;"></textarea>
+        <div class="medal-view" id="std-gold-out-medal"></div>
+      </div>
+      <div id="std-seg-wrap" style="display:none;">
+        <div class="result-label" style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;">
+          <span>Segment Splits</span>
+          <button class="btn-small" onclick="copySplits('std-seg-out')">COPY</button>
+          <button class="btn-small" id="std-seg-medal-btn" onclick="toggleMedalView('std-seg-out', 'std-seg-medal-btn')" style="border-color:#4fc3f7;color:#4fc3f7;">MEDALS</button>
+        </div>
+        <textarea id="std-seg-out" rows="8" readonly style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:16px;padding:12px 16px;outline:none;resize:vertical;margin-top:6px;"></textarea>
+        <div class="medal-view" id="std-seg-out-medal"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tab-timer">
+
+    <div class="field">
+      <label class="section-label">Rush</label>
+      <select id="rt-rush" onchange="onRtRushChange()">
+        <option value="96">White / Mikey (96 levels)</option>
+        <option value="violet">Violet (8 levels)</option>
+        <option value="red">Red (8 levels)</option>
+        <option value="yellow">Yellow (8 levels)</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label class="section-label">Input Mode</label>
+      <div style="display:flex;gap:0;">
+        <button class="btn-small active" id="rt-mode-seed-btn" onclick="rtSetMode('seed')" style="flex:1;padding:10px;font-size:13px;">Load by Seed</button>
+        <button class="btn-small" id="rt-mode-manual-btn" onclick="rtSetMode('manual')" style="flex:1;padding:10px;font-size:13px;border-left:none;">Enter Manually</button>
+      </div>
+    </div>
+
+    <div id="rt-seed-panel">
+      <div class="field">
+        <label class="section-label">Seed Number</label>
+        <div style="display:flex;gap:10px;">
+          <input type="number" id="rt-seed" placeholder="e.g. 58685" min="1" max="2147483647" style="flex:1;">
+          <button class="btn-small" onclick="rtLoadSeed()" style="padding:10px 20px;font-size:13px;border-color:var(--accent);color:var(--accent);">LOAD SEED</button>
+        </div>
+        <div class="hint">Levels will appear in seed play order.</div>
+      </div>
+    </div>
+
+    <div class="field" id="rt-levels-panel" style="display:none;">
+      <label class="section-label" id="rt-levels-label">Level Order &amp; Split Times</label>
+      <div class="hint" style="margin-bottom:12px;" id="rt-levels-hint">Enter each level's cumulative split time. Times are subtracted to produce segment times.</div>
+      <table style="width:100%;border-collapse:collapse;">
+        <colgroup><col style="width:36px;"><col style="width:60%;"><col style="width:40%;"></colgroup>
+        <thead>
+          <tr>
+            <th style="font-size:11px;letter-spacing:3px;color:var(--text-dim);text-align:left;padding:0 0 8px;border-bottom:1px solid var(--border);"></th>
+            <th style="font-size:11px;letter-spacing:3px;color:var(--text-dim);text-align:left;padding:0 0 8px;border-bottom:1px solid var(--border);">Level</th>
+            <th style="font-size:11px;letter-spacing:3px;color:var(--text-dim);text-align:right;padding:0 0 8px;border-bottom:1px solid var(--border);">Split Time (MM:SS.mmm)</th>
+          </tr>
+        </thead>
+        <tbody id="rt-levels-body"></tbody>
+      </table>
+    </div>
+
+    <div id="rt-error" style="display:none;color:var(--accent2);font-size:14px;margin-top:12px;line-height:1.6;padding:10px 14px;border:1px solid var(--accent2);"></div>
+    <button class="btn" id="rt-calc-btn" onclick="rtCalculate()" style="display:none;">CALCULATE SPLITS</button>
+
+    <div id="rt-result" style="display:none;margin-top:32px;">
+      <div class="field" style="margin-bottom:16px;">
+        <label class="section-label">Output Format</label>
+        <div style="display:flex;gap:0;">
+          <button class="btn-small active" id="rt-fmt-plain" onclick="rtSetFormat('plain')" style="flex:1;padding:8px;font-size:12px;">Plain Seconds &mdash; LiveSplit / WSplit</button>
+          <button class="btn-small" id="rt-fmt-mmss" onclick="rtSetFormat('mmss')" style="flex:1;padding:8px;font-size:12px;border-left:none;">MM:SS.mmm &mdash; Google Sheets</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <span class="result-label">Segment Times</span>
+            <button class="btn-small" onclick="rtCopy('rt-times-out', this)">COPY</button>
+            <button class="btn-small" id="rt-times-medal-btn" onclick="toggleMedalView('rt-times-out', 'rt-times-medal-btn')" style="border-color:#4fc3f7;color:#4fc3f7;">MEDALS</button>
+          </div>
+          <textarea id="rt-times-out" rows="10" readonly style="width:100%;background:var(--bg);border:1px solid var(--border);color:#ffe066;font-family:var(--mono);font-size:16px;padding:12px 16px;outline:none;resize:vertical;"></textarea>
+          <div class="medal-view" id="rt-times-out-medal"></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <span class="result-label">Level Order</span>
+            <button class="btn-small" onclick="rtCopy('rt-levels-out', this)">COPY</button>
+          </div>
+          <textarea id="rt-levels-out" rows="10" readonly style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--accent);font-family:var(--mono);font-size:16px;padding:12px 16px;outline:none;resize:vertical;"></textarea>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+<div class="corner-deco">RUSH TOOLBOX // v3.5.1</div>
+<script>
+// ── C# System.Random port ──────────────────────────────────────────────────
+var MBIG = 2147483647;
+var INV  = 1.0 / 2147483647;
+
+function initSA(seed, SA) {
+  var mj = 161803398 - (seed < 0 ? -seed : seed);
+  SA[55] = mj;
+  var mk = 1;
+  for (var i = 1; i < 55; i++) {
+    var ix = (21 * i) % 55;
+    SA[ix] = mk; mk = mj - mk;
+    if (mk < 0) mk += MBIG; mj = SA[ix];
+  }
+  for (var k = 1; k < 5; k++) {
+    for (var i = 1; i < 56; i++) {
+      var n = i + 30; if (n >= 55) n -= 55;
+      SA[i] -= SA[1 + n]; if (SA[i] < 0) SA[i] += MBIG;
+    }
+  }
+}
+
+// Full shuffle — used for Generate tab and to build the display sequence on match
+function fullShuffle(numLevels, seed) {
+  var SA = new Int32Array(56);
+  initSA(seed, SA);
+  var ie = 0, ix = 21;
+  var arr = [];
+  for (var i = 0; i < numLevels; i++) arr[i] = i;
+  for (var i = 0; i < numLevels; i++) {
+    if (++ie >= 56) ie = 1; if (++ix >= 56) ix = 1;
+    var r = SA[ie] - SA[ix]; if (r === MBIG) r--; if (r < 0) r += MBIG; SA[ie] = r;
+    var j = Math.floor(r * INV * numLevels);
+    var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+  }
+  return arr;
+}
+
+// ── Level names ────────────────────────────────────────────────────────────
+// ── Level name registries per rush ────────────────────────────────────────
+var RUSH_LEVELS = {
+  "96": ["Movement","Pummel","Gunner","Cascade","Elevate","Bounce","Purify","Climb","Fasttrack","Glass Port","Take Flight","Godspeed","Dasher","Thrasher","Outstretched","Smackdown","Catwalk","Fastlane","Distinguish","Dancer","Guardian","Stomp","Jumper","Dash Tower","Descent","Driller","Canals","Sprint","Mountain","Superkinetic","Arrival","Forgotten City","The Clocktower","Fireball","Ringer","Cleaner","Warehouse","Boom","Streets","Steps","Demolition","Arcs","Apartment","Hanging Gardens","Tangled","Waterworks","Killswitch","Falling","Shocker","Bouquet","Prepare","Triptrack","Race","Bubble","Shield","Overlook","Pop","Minefield","Mimic","Trigger","Greenhouse","Sweep","Fuse","Heaven's Edge","Zipline","Swing","Chute","Crash","Ascent","Straightaway","Firecracker","Streak","Mirror","Escalation","Bolt","Godstreak","Plunge","Mayhem","Barrage","Estate","Trapwire","Ricochet","Fortress","Holy Ground","The Third Temple","Spree","Breakthrough","Glide","Closer","Hike","Switch","Access","Congregation","Sequence","Marathon","Absolution"],
+  "violet": ["Doghouse","Choker","Chain","Hellevator","Razor","All Seeing Eye","Resident Saw I","Resident Saw II"],
+  "red": ["Elevate Traversal I","Elevate Traversal II","Purify Traversal","Godspeed Traversal","Stomp Traversal","Fireball Traversal","Dominion Traversal","Book of Life Traversal"],
+  "yellow": ["Sunset Flip Powerbomb","Balloon Mountain","Climbing Gym","Fisherman Suplex","STF","Arena","Attitude Adjustment","Rocket"]
+};
+
+// Active level list (set when rush changes)
+var RUSH_DISPLAY_NAMES = { '96': 'White / Mikey', 'violet': 'Violet', 'red': 'Red', 'yellow': 'Yellow' };
+var RUSH_STANDARD_HINT = {
+  '96':     'Paste times in standard level order (Movement first, Absolution last).',
+  'violet': 'Paste times in standard level order (Doghouse first, Resident Saw II last).',
+  'red':    'Paste times in standard level order (Elevate Traversal I first, Book of Life Traversal last).',
+  'yellow': 'Paste times in standard level order (Sunset Flip Powerbomb first, Rocket last).'
+};
+var LEVEL_NAMES = RUSH_LEVELS["96"];
+var LEVEL_MAP = {};
+function rebuildLevelMap() {
+  LEVEL_MAP = {};
+  for (var i = 0; i < LEVEL_NAMES.length; i++) LEVEL_MAP[LEVEL_NAMES[i].toLowerCase()] = i;
+}
+rebuildLevelMap();
+
+function setRush(rushKey) {
+  LEVEL_NAMES = RUSH_LEVELS[rushKey] || RUSH_LEVELS["96"];
+  rebuildLevelMap();
+}
+
+function levelLabel(i) { return LEVEL_NAMES[i] || ('Level '+(i+1)); }
+
+// Shorthand aliases
+var LEVEL_ALIASES = {
+  'glort':           'glass port',
+  'ttt':             'the third temple',
+  'ct':              'the clocktower',
+  'clocktower':      'the clocktower',
+  'sfp':             'sunset flip powerbomb',
+  'bm':              'balloon mountain',
+  'cg':              'climbing gym',
+  'fish sup':        'fisherman suplex',
+  'fish soup':       'fisherman suplex',
+  'eti':             'elevate traversal i',
+  'et1':             'elevate traversal i',
+  'etii':            'elevate traversal ii',
+  'et2':             'elevate traversal ii',
+  'boof trav':       'book of life traversal',
+  'ase':             'all seeing eye',
+  'rsi':             'resident saw i',
+  'rs1':             'resident saw i',
+  'rsii':            'resident saw ii',
+  'rs2':             'resident saw ii',
+  // ── In-game code names ───────────────────────────────────────────────────
+  'tut_movement': 'movement',
+  'tut_shootingrange': 'pummel',
+  'slugger': 'gunner',
+  'tut_frog': 'cascade',
+  'tut_jump': 'elevate',
+  'grid_tut_balloon': 'bounce',
+  'tut_bomb2': 'purify',
+  'tut_bombjump': 'climb',
+  'tut_fasttrack': 'fasttrack',
+  'grid_port': 'glass port',
+  'grid_pagoda': 'take flight',
+  'tut_rifle': 'godspeed',
+  'tut_riflejock': 'dasher',
+  'tut_dashenemy': 'thrasher',
+  'grid_jumpdash': 'outstretched',
+  'grid_smackdown': 'smackdown',
+  'grid_meaty_balloons': 'catwalk',
+  'grid_fast_balloon': 'fastlane',
+  'grid_dragon2': 'distinguish',
+  'grid_dashdance': 'dancer',
+  'tut_guardian': 'guardian',
+  'tut_uzi': 'stomp',
+  'tut_jumper': 'jumper',
+  'tut_bomb': 'dash tower',
+  'grid_descend': 'descent',
+  'grid_stamperout': 'driller',
+  'grid_cruise': 'canals',
+  'grid_sprint': 'sprint',
+  'grid_mountain': 'mountain',
+  'grid_superkinetic': 'superkinetic',
+  'grid_arrival': 'arrival',
+  'floating': 'forgotten city',
+  'grid_boss_yellow': 'the clocktower',
+  'grid_hophop': 'fireball',
+  'grid_ringer_tutorial': 'ringer',
+  'grid_ringer_exploration': 'cleaner',
+  'grid_hopscotch': 'warehouse',
+  'grid_boom': 'boom',
+  'grid_snake_in_my_boot': 'streets',
+  'grid_flock': 'steps',
+  'grid_bombs_ahoy': 'demolition',
+  'grid_arcs': 'arcs',
+  'grid_apartment': 'apartment',
+  'tut_tripwire': 'hanging gardens',
+  'grid_tangled': 'tangled',
+  'grid_hunt': 'waterworks',
+  'grid_cannons': 'killswitch',
+  'grid_falling': 'falling',
+  'tut_shocker2': 'shocker',
+  'tut_shocker': 'bouquet',
+  'grid_prepare': 'prepare',
+  'grid_tripmaze': 'triptrack',
+  'grid_race': 'race',
+  'tut_forcefield2': 'bubble',
+  'grid_shield': 'shield',
+  'sa l vage2': 'overlook',
+  'grid_vertical': 'pop',
+  'grid_minefield': 'minefield',
+  'tut_mimic': 'mimic',
+  'grid_mimicpop': 'trigger',
+  'grid_swarm': 'greenhouse',
+  'grid_switch': 'sweep',
+  'grid_traps2': 'fuse',
+  'tut_rocketjump': "heaven's edge",
+  'tut_zipline': 'zipline',
+  'grid_climbang': 'swing',
+  'grid_rocketuzi': 'chute',
+  'grid_crashland': 'crash',
+  'grid_escalate': 'ascent',
+  'grid_spiderclaus': 'straightaway',
+  'grid_firecracker_2': 'firecracker',
+  'grid_spiderman': 'streak',
+  'grid_destruction': 'mirror',
+  'grid_heat': 'escalation',
+  'grid_bolt': 'bolt',
+  'grid_pon': 'godstreak',
+  'grid_charge': 'plunge',
+  'grid_mimicfinale': 'mayhem',
+  'grid_barrage': 'barrage',
+  'grid_1gun': 'estate',
+  'grid_heck': 'trapwire',
+  'grid_antfarm': 'ricochet',
+  'grid_fortress': 'fortress',
+  'grid_godtemple_entry': 'holy ground',
+  'grid_boss_godsdeathtemple': 'the third temple',
+  'grid_exterminator': 'spree',
+  'grid_fever': 'breakthrough',
+  'grid_skipslide': 'glide',
+  'grid_closer': 'closer',
+  'grid_hike': 'hike',
+  'grid_skip': 'switch',
+  'grid_ceiling': 'access',
+  'grid_boop': 'congregation',
+  'grid_triprap': 'sequence',
+  'grid_ziprap': 'marathon',
+  'tut_origin': 'sacrifice',
+  'grid_boss_rapture': 'absolution',
+  'sidequest_obstacle_pistol': 'elevate traversal i',
+  'sidequest_obstacle_pistol_shoot': 'elevate traversal ii',
+  'sidequest_obstacle_machinegun': 'purify traversal',
+  'sidequest_obstacle_rifle_2': 'godspeed traversal',
+  'sidequest_obstacle_uzi2': 'stomp traversal',
+  'sidequest_obstacle_shotgun': 'fireball traversal',
+  'sidequest_obstacle_rocketlauncher': 'dominion traversal',
+  'sidequest_rapture_quest': 'book of life traversal',
+  'sidequest_dodger': 'doghouse',
+  'grid_glasspath': 'choker',
+  'grid_glasspath2': 'chain',
+  'grid_hellvator': 'hellevator',
+  'grid_glasspath3': 'razor',
+  'sidequest_all_seeing_eye': 'all seeing eye',
+  'sidequest_residentsawb': 'resident saw i',
+  'sidequest_residentsaw': 'resident saw ii',
+  'sidequest_sunset_flip_powerbomb': 'sunset flip powerbomb',
+  'grid_balloonlair': 'balloon mountain',
+  'sidequest_barrel_climb': 'climbing gym',
+  'sidequest_fisherman_suplex': 'fisherman suplex',
+  'sidequest_stf': 'stf',
+  'sidequest_arenasixnine': 'arena',
+  'sidequest_attitude_adjustment': 'attitude adjustment',
+  'sidequest_rocketgodz': 'rocket'
+};
+
+function findLevelByName(query) {
+  var q = query.toLowerCase().trim();
+  // 1. Exact match
+  if (LEVEL_MAP[q] !== undefined) return { idx: LEVEL_MAP[q] };
+  // 2. Alias match
+  if (LEVEL_ALIASES[q] !== undefined) {
+    var aliasKey = LEVEL_ALIASES[q];
+    if (LEVEL_MAP[aliasKey] !== undefined) return { idx: LEVEL_MAP[aliasKey] };
+  }
+  // 3. Partial match — must match exactly one level
+  var matches = [];
+  for (var i = 0; i < LEVEL_NAMES.length; i++) {
+    if (LEVEL_NAMES[i].toLowerCase().indexOf(q) !== -1) matches.push(i);
+  }
+  if (matches.length === 1) return { idx: matches[0] };
+  if (matches.length > 1) return { error: '"' + query + '" matches multiple levels: ' + matches.map(function(i){ return LEVEL_NAMES[i]; }).join(', ') };
+  return { error: 'Unknown level: "' + query + '"' };
+}
+
+function parseLevels(input, numLevels) {
+  var parts = input.split(',').map(function(s){return s.trim();}).filter(Boolean);
+  if (!parts.length) return {error:'No levels entered.'};
+  var result = [];
+  var seen = {};
+  var isNum = parts.every(function(p){return /^\d+$/.test(p);});
+  for (var i = 0; i < parts.length; i++) {
+    var idx;
+    if (isNum) {
+      idx = parseInt(parts[i]) - 1;
+      if (idx < 0 || idx >= numLevels) return {error:'Level '+parts[i]+' out of range.'};
+    } else {
+      var found = findLevelByName(parts[i]);
+      if (found.error) return { error: found.error };
+      idx = found.idx;
+    }
+    if (seen[idx] !== undefined) {
+      return { error: 'Duplicate level detected: "' + LEVEL_NAMES[idx] + '" appears more than once (check entries #' + (seen[idx]+1) + ' and #' + (i+1) + ').' };
+    }
+    seen[idx] = i;
+    result.push(idx);
+  }
+  return {indices: result};
+}
+
+// ── Search state ───────────────────────────────────────────────────────────
+var searching = false;
+var searchTimer = null;
+
+// Reusable typed buffers (allocated once, reused every seed)
+var _SA  = new Int32Array(56);
+var _arr = new Int32Array(96); // max 96 levels
+
+// ── Bitset helpers (3×u32 = 96 bits, one per level index) ─────────────────
+// Much faster than object property lookup in the hot loop
+var _targetBits = new Uint32Array(3); // bits for desired levels
+var _avoidBits  = new Uint32Array(3); // bits for excluded levels
+function bitsetSet(bs, idx)   { bs[idx >> 5] |=  (1 << (idx & 31)); }
+function bitsetTest(bs, idx)  { return (bs[idx >> 5] & (1 << (idx & 31))) !== 0; }
+function bitsetClear(bs)      { bs[0] = 0; bs[1] = 0; bs[2] = 0; }
+
+
+// ── WebGPU seed search ──────────────────────────────────────────────────────
+var gpuDevice   = null;
+var gpuAdapter  = null;
+var gpuReady    = false;
+var engineMode  = 'cpu'; // 'cpu' or 'gpu' — set by user, saved to localStorage
+var GPU_CHUNK   = 65536;        // calibrated on first search
+var GPU_CALIBRATED = false;
+var GPU_TARGET_MS  = 50;        // target ms per dispatch
+var GPU_CHUNK_MIN  = 65536;
+var GPU_CHUNK_MAX  = 4000000;
+
+function toggleAdvanced() {
+  var toggle = document.getElementById('adv-toggle');
+  var body   = document.getElementById('adv-body');
+  var open   = body.classList.toggle('visible');
+  toggle.classList.toggle('open', open);
+}
+
+function setEngineMode(mode) {
+  if (mode === 'gpu' && !gpuReady) return; // guard — button should be disabled anyway
+  engineMode = mode;
+  try { localStorage.setItem('rsf_engine', mode); } catch(e) {}
+  document.getElementById('engine-cpu-btn').classList.toggle('active', mode === 'cpu');
+  document.getElementById('engine-gpu-btn').classList.toggle('active', mode === 'gpu');
+}
+
+async function initWebGPU() {
+  if (!navigator.gpu) {
+    updateEngineUI(false, 'WebGPU not supported in this browser');
+    return false;
+  }
+  try {
+    gpuAdapter = await navigator.gpu.requestAdapter();
+    if (!gpuAdapter) { updateEngineUI(false, 'No GPU adapter found'); return false; }
+    gpuDevice = await gpuAdapter.requestDevice();
+    gpuReady  = true;
+    // Read GPU name for display if available
+    var gpuName = '';
+    try { gpuName = gpuAdapter.info ? (gpuAdapter.info.description || gpuAdapter.info.device || '') : ''; } catch(e) {}
+    updateEngineUI(true, gpuName ? '⚡ ' + gpuName : '⚡ GPU ready');
+    // Restore saved preference
+    var saved = null;
+    try { saved = localStorage.getItem('rsf_engine'); } catch(e) {}
+    if (saved === 'gpu') setEngineMode('gpu');
+    console.log('[v3] WebGPU ready');
+    return true;
+  } catch(e) {
+    console.warn('[v3] WebGPU init failed:', e);
+    updateEngineUI(false, 'GPU init failed');
+    return false;
+  }
+}
+
+function updateEngineUI(available, statusText) {
+  var gpuBtn    = document.getElementById('engine-gpu-btn');
+  var statusEl  = document.getElementById('engine-status');
+  if (!gpuBtn || !statusEl) return;
+  gpuBtn.disabled = !available;
+  statusEl.textContent = statusText;
+  statusEl.className = 'engine-status ' + (available ? 'ready' : 'unavail');
+}
+
+initWebGPU();
+
+function buildShader(numLevels, targetBits0, targetBits1, targetBits2,
+                     avoidBits0,  avoidBits1,  avoidBits2,
+                     tLen, searchDepth, avoidDepth, avoidEnabled,
+                     forceFirstEnabled, forceFirstIdx, orderMatters,
+                     targetIndices, maxResults) {
+  // Encode targetIndices for exact-order check (up to 96 values)
+  var idxArray = [];
+  for (var i = 0; i < targetIndices.length; i++) idxArray.push('u32(' + targetIndices[i] + ')');
+  while (idxArray.length < 96) idxArray.push('u32(0)');
+
+  return `
+const MBIG : i32 = 2147483647;
+const NUM_LEVELS : u32 = ${numLevels}u;
+const T_BITS0 : u32 = ${targetBits0}u;
+const T_BITS1 : u32 = ${targetBits1}u;
+const T_BITS2 : u32 = ${targetBits2}u;
+const A_BITS0 : u32 = ${avoidBits0}u;
+const A_BITS1 : u32 = ${avoidBits1}u;
+const A_BITS2 : u32 = ${avoidBits2}u;
+const T_LEN        : u32 = ${tLen}u;
+const SEARCH_DEPTH : u32 = ${searchDepth}u;
+const AVOID_DEPTH  : u32 = ${avoidDepth}u;
+const AVOID_ENABLED       : u32 = ${avoidEnabled ? 1 : 0}u;
+const FORCE_FIRST_ENABLED : u32 = ${forceFirstEnabled ? 1 : 0}u;
+const FORCE_FIRST_IDX     : u32 = ${forceFirstIdx >= 0 ? forceFirstIdx : 0}u;
+const ORDER_MATTERS : u32 = ${orderMatters ? 1 : 0}u;
+const MAX_RESULTS   : u32 = ${maxResults}u;
+
+// Exact-order target indices
+const TARGET_INDICES = array<u32, 96>(${idxArray.join(',')});
+
+struct Params { seed_start: u32, seed_end: u32 }
+@group(0) @binding(0) var<uniform>             params  : Params;
+@group(0) @binding(1) var<storage, read_write> counter : atomic<u32>;
+@group(0) @binding(2) var<storage, read_write> seeds   : array<u32>;
+
+fn bitTest(b0: u32, b1: u32, b2: u32, idx: u32) -> bool {
+  let word = idx >> 5u;
+  let bit  = idx & 31u;
+  if (word == 0u) { return (b0 & (1u << bit)) != 0u; }
+  if (word == 1u) { return (b1 & (1u << bit)) != 0u; }
+  return                   (b2 & (1u << bit)) != 0u;
+}
+
+@compute @workgroup_size(64)
+fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let seed = params.seed_start + gid.x;
+  if (seed >= params.seed_end) { return; }
+  if (seed == 0u || seed > 2147483647u) { return; }
+
+  // Init C# System.Random SA table
+  var SA : array<i32, 56>;
+  var mj : i32 = 161803398i - i32(seed);
+  SA[55] = mj;
+  var mk : i32 = 1i;
+  for (var i : u32 = 1u; i < 55u; i++) {
+    let ix = (21u * i) % 55u;
+    SA[ix] = mk;
+    mk = mj - mk;
+    if (mk < 0i) { mk += MBIG; }
+    mj = SA[ix];
+  }
+  for (var k : u32 = 1u; k < 5u; k++) {
+    for (var i : u32 = 1u; i < 56u; i++) {
+      var n : u32 = i + 30u;
+      if (n >= 55u) { n -= 55u; }
+      SA[i] -= SA[1u + n];
+      if (SA[i] < 0i) { SA[i] += MBIG; }
+    }
+  }
+
+  // Packed u8 array: 4 indices per u32, 24 words covers 96 slots
+  var arr : array<u32, 24>;
+  for (var w : u32 = 0u; w < 24u; w++) {
+    let b = w * 4u;
+    arr[w] = b | ((b+1u) << 8u) | ((b+2u) << 16u) | ((b+3u) << 24u);
+  }
+  var ie : u32 = 0u; var ixx : u32 = 21u;
+  for (var i : u32 = 0u; i < NUM_LEVELS; i++) {
+    ie  += 1u; if (ie  >= 56u) { ie  = 1u; }
+    ixx += 1u; if (ixx >= 56u) { ixx = 1u; }
+    var r : i32 = SA[ie] - SA[ixx];
+    if (r < 0i) { r += MBIG; }
+    SA[ie] = r;
+    // Exact integer index via u32 split multiply (no f32, no u64 needed)
+    let ur  = u32(r);
+    let hi  = ur >> 16u;
+    let lo  = ur & 0xFFFFu;
+    let A   = hi * NUM_LEVELS;
+    let B   = lo * NUM_LEVELS;
+    let j   = (A >> 15u) + ((((A & 0x7FFFu) << 16u) + B) >> 31u);
+    // Packed byte swap: read bytes at positions i and j, swap them
+    let wi = i >> 2u; let si = (i & 3u) * 8u;
+    let wj = j >> 2u; let sj = (j & 3u) * 8u;
+    let vi = (arr[wi] >> si) & 0xFFu;
+    let vj = (arr[wj] >> sj) & 0xFFu;
+    if (wi == wj) {
+      // Same word: clear both bytes and write both in one operation to avoid clobber
+      arr[wi] = (arr[wi] & ~((0xFFu << si) | (0xFFu << sj))) | (vj << si) | (vi << sj);
+    } else {
+      arr[wi] = (arr[wi] & ~(0xFFu << si)) | (vj << si);
+      arr[wj] = (arr[wj] & ~(0xFFu << sj)) | (vi << sj);
+    }
+  }
+
+  // Match check
+  var matched : bool = true;
+  // (packed byte reads inlined at each use site for WGSL compatibility)
+  if (ORDER_MATTERS == 1u) {
+    for (var i : u32 = 0u; i < T_LEN; i++) {
+      let vi = (arr[i >> 2u] >> ((i & 3u) * 8u)) & 0xFFu;
+      if (vi != TARGET_INDICES[i]) { matched = false; break; }
+    }
+  } else {
+    let v0 = (arr[0] >> 0u) & 0xFFu;
+    if (FORCE_FIRST_ENABLED == 1u && v0 != FORCE_FIRST_IDX) {
+      matched = false;
+    } else {
+      var found : u32 = 0u;
+      for (var ci : u32 = 0u; ci < SEARCH_DEPTH; ci++) {
+        let vci = (arr[ci >> 2u] >> ((ci & 3u) * 8u)) & 0xFFu;
+        if (bitTest(T_BITS0, T_BITS1, T_BITS2, vci)) { found++; }
+      }
+      matched = (found == T_LEN);
+    }
+  }
+
+  // Avoid check
+  if (matched && AVOID_ENABLED == 1u) {
+    for (var ai : u32 = 0u; ai < AVOID_DEPTH; ai++) {
+      let vai = (arr[ai >> 2u] >> ((ai & 3u) * 8u)) & 0xFFu;
+      if (bitTest(A_BITS0, A_BITS1, A_BITS2, vai)) { matched = false; break; }
+    }
+  }
+
+  if (matched) {
+    let slot = atomicAdd(&counter, 1u);
+    if (slot < MAX_RESULTS) {
+      seeds[slot] = seed;
+    }
+  }
+}`;
+}
+
+// Re-interpret results[0] as atomic — WGSL uses atomic on storage binding[0]
+// We store count at index 0, seeds at 1..N
+// JS side: read results back and dispatch next chunk
+
+async function gpuSearch(params) {
+  // params: { numLevels, targetBits, avoidBits, tLen, searchDepth, avoidDepth,
+  //           avoidEnabled, forceFirstEnabled, forceFirstIdx, orderMatters,
+  //           targetIndices, maxSeeds, onFound, onProgress, onDone }
+  if (!gpuReady) return false;
+
+  const { numLevels, targetBits, avoidBits, tLen, searchDepth, avoidDepth,
+          avoidEnabled, forceFirstEnabled, forceFirstIdx, orderMatters,
+          targetIndices, maxSeeds, onFound, onProgress, onDone } = params;
+
+  const MAX_SEED = 2147483647;
+  const RESULTS_SLOT = maxSeeds + 1; // staging layout: [count, seed0...seedN]
+  const WG_SIZE = 64;
+
+  const shaderCode = buildShader(
+    numLevels,
+    targetBits[0], targetBits[1], targetBits[2],
+    avoidBits[0],  avoidBits[1],  avoidBits[2],
+    tLen, searchDepth, avoidDepth, avoidEnabled,
+    forceFirstEnabled, forceFirstIdx, orderMatters,
+    targetIndices, maxSeeds
+  );
+
+  let pipeline, uniformBuffer, resultsBuffer, stagingBuffer, bindGroup;
+  try {
+    const module = gpuDevice.createShaderModule({ code: shaderCode });
+    pipeline = gpuDevice.createComputePipeline({
+      layout: 'auto',
+      compute: { module, entryPoint: 'main' }
+    });
+
+    uniformBuffer = gpuDevice.createBuffer({
+      size: 8, // 2×u32: seed_start, seed_end
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+    });
+    // Separate atomic counter buffer (binding 1) and seeds buffer (binding 2)
+    counterBuffer = gpuDevice.createBuffer({
+      size: 4, // single atomic<u32>
+      usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST
+    });
+    resultsBuffer = gpuDevice.createBuffer({
+      size: maxSeeds * 4,
+      usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST
+    });
+    stagingBuffer = gpuDevice.createBuffer({
+      size: (maxSeeds + 1) * 4, // +1 for counter
+      usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST
+    });
+    bindGroup = gpuDevice.createBindGroup({
+      layout: pipeline.getBindGroupLayout(0),
+      entries: [
+        { binding: 0, resource: { buffer: uniformBuffer } },
+        { binding: 1, resource: { buffer: counterBuffer } },
+        { binding: 2, resource: { buffer: resultsBuffer } }
+      ]
+    });
+  } catch(e) {
+    console.warn('[v3] GPU pipeline build failed:', e);
+    return false;
+  }
+
+  let seedStart = 1;
+  let totalFound = 0;
+  const foundSeeds = [];
+  const startTime = Date.now();
+
+  // ── Calibrate GPU_CHUNK on first search ──────────────────────────────────
+  // Uses mapAsync on a readback buffer as the completion barrier — this is a
+  // true GPU-done signal, unlike onSubmittedWorkDone() which resolves on submit.
+  // We run 3 warmup dispatches and take the median to avoid cold-start noise.
+  if (!GPU_CALIBRATED) {
+    const CAL_CHUNK = 65536;
+    const calStaging = gpuDevice.createBuffer({
+      size: 4,
+      usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST
+    });
+    const calTimes = [];
+    for (let pass = 0; pass < 3; pass++) {
+      // Clear counter
+      const clrEnc = gpuDevice.createCommandEncoder();
+      clrEnc.clearBuffer(counterBuffer);
+      gpuDevice.queue.submit([clrEnc.finish()]);
+      gpuDevice.queue.writeBuffer(uniformBuffer, 0, new Uint32Array([1, CAL_CHUNK + 1]));
+      const t0 = performance.now();
+      const calEnc = gpuDevice.createCommandEncoder();
+      const calPass = calEnc.beginComputePass();
+      calPass.setPipeline(pipeline);
+      calPass.setBindGroup(0, bindGroup);
+      calPass.dispatchWorkgroups(Math.ceil(CAL_CHUNK / WG_SIZE));
+      calPass.end();
+      // Copy one word to staging — mapAsync on this is our GPU-done barrier
+      calEnc.copyBufferToBuffer(counterBuffer, 0, calStaging, 0, 4);
+      gpuDevice.queue.submit([calEnc.finish()]);
+      await calStaging.mapAsync(GPUMapMode.READ);
+      const calMs = performance.now() - t0;
+      calStaging.unmap();
+      calTimes.push(calMs);
+    }
+    calStaging.destroy();
+    // Use median of 3 to ignore cold-start outlier
+    calTimes.sort((a, b) => a - b);
+    const medianMs = calTimes[1];
+    // Scale chunk to hit GPU_TARGET_MS per dispatch, clamped to safe range
+    GPU_CHUNK = Math.max(GPU_CHUNK_MIN, Math.min(GPU_CHUNK_MAX,
+      Math.round(CAL_CHUNK * (GPU_TARGET_MS / Math.max(medianMs, 0.5)) / GPU_CHUNK_MIN) * GPU_CHUNK_MIN
+    ));
+    GPU_CALIBRATED = true;
+    console.log('[v3] GPU calibration: ' + calTimes.map(function(t){ return t.toFixed(1)+'ms'; }).join(', ') + ' → median ' + medianMs.toFixed(1) + 'ms → chunk set to ' + GPU_CHUNK.toLocaleString());
+  }
+
+  async function dispatchChunk() {
+    if (!searching) { onDone(foundSeeds); return; }
+    if (seedStart > MAX_SEED) { onDone(foundSeeds); return; }
+
+    const seedEnd = Math.min(seedStart + GPU_CHUNK, MAX_SEED + 1);
+
+    // Zero the atomic counter before each chunk (GPU-side clear, no CPU transfer)
+    const clearEncoder = gpuDevice.createCommandEncoder();
+    clearEncoder.clearBuffer(counterBuffer);
+    gpuDevice.queue.submit([clearEncoder.finish()]);
+    // Write params
+    gpuDevice.queue.writeBuffer(uniformBuffer, 0, new Uint32Array([seedStart, seedEnd]));
+
+    const encoder = gpuDevice.createCommandEncoder();
+    const pass = encoder.beginComputePass();
+    pass.setPipeline(pipeline);
+    pass.setBindGroup(0, bindGroup);
+    pass.dispatchWorkgroups(Math.ceil(GPU_CHUNK / WG_SIZE));
+    pass.end();
+    // Copy counter (4 bytes) then seeds into staging buffer back to back
+    encoder.copyBufferToBuffer(counterBuffer, 0, stagingBuffer, 0, 4);
+    encoder.copyBufferToBuffer(resultsBuffer, 0, stagingBuffer, 4, maxSeeds * 4);
+    gpuDevice.queue.submit([encoder.finish()]);
+
+    await stagingBuffer.mapAsync(GPUMapMode.READ);
+    const mapped = stagingBuffer.getMappedRange();
+    const count = new Uint32Array(mapped, 0, 1)[0];
+    const seedData = new Uint32Array(mapped, 4, maxSeeds);
+    const collected = [];
+    for (let i = 0; i < count && collected.length + foundSeeds.length < maxSeeds; i++) {
+      const s = seedData[i];
+      if (s > 0 && s <= MAX_SEED) collected.push(s);
+    }
+    stagingBuffer.unmap();
+    // Process collected seeds after unmap
+
+    for (let i = 0; i < collected.length; i++) {
+      foundSeeds.push(collected[i]);
+      onFound(collected[i]);
+    }
+
+    if (foundSeeds.length >= maxSeeds) { onDone(foundSeeds); return; }
+
+    seedStart = seedEnd;
+    const elapsed = (Date.now() - startTime) / 1000;
+    const rate = elapsed > 0.5 ? Math.round(seedEnd / elapsed) : 0;
+    onProgress(seedEnd, MAX_SEED, rate);
+
+    // Yield to browser, then next chunk
+    setTimeout(dispatchChunk, 0);
+  }
+
+  dispatchChunk();
+  return true;
+}
+
+function startSearch() {
+  var rushKey = document.getElementById('s-rush').value;
+  var numLevels = (rushKey === 'violet' || rushKey === 'red' || rushKey === 'yellow') ? 8 : parseInt(rushKey);
+  setRush(rushKey);
+  var orderMatters = document.querySelector('input[name="order"]:checked').value === '1';
+  var rawInput    = document.getElementById('s-levels').value;
+  var searchDepth = parseInt(document.getElementById('s-depth').value) || numLevels;
+
+  var parsed = parseLevels(rawInput, numLevels);
+  if (parsed.error) { showSearchError(parsed.error); return; }
+
+  var targetIndices = parsed.indices;
+  if (targetIndices.length > 0 && searchDepth < targetIndices.length) {
+    showSearchError('Search Depth (' + searchDepth + ') is less than the number of Desired Starting Levels (' + targetIndices.length + '). Please increase Search Depth to at least ' + targetIndices.length + '.');
+    return;
+  }
+
+  // Avoid / Excluded Levels
+  var avoidEnabled = document.getElementById('avoid-checkbox').checked;
+  var avoidSet = {};
+  var avoidDepth = 0;
+  if (avoidEnabled) {
+    var avoidInput = document.getElementById('avoid-levels').value.trim();
+    var avoidDepthVal = parseInt(document.getElementById('avoid-depth').value) || 5;
+    if (!avoidInput) { showSearchError('Excluded Levels is enabled but no levels were entered.'); return; }
+    var avoidParsed = parseLevels(avoidInput, numLevels);
+    if (avoidParsed.error) { showSearchError('Excluded Levels: ' + avoidParsed.error); return; }
+    // Check for overlap with desired levels
+    for (var ai = 0; ai < avoidParsed.indices.length; ai++) {
+      if (targetIndices.indexOf(avoidParsed.indices[ai]) !== -1) {
+        showSearchError('Level "' + LEVEL_NAMES[avoidParsed.indices[ai]] + '" appears in both Desired Starting Levels and Excluded Levels.');
+        return;
+      }
+      avoidSet[avoidParsed.indices[ai]] = true;
+      bitsetSet(_avoidBits, avoidParsed.indices[ai]);
+    }
+    avoidDepth = Math.min(avoidDepthVal, numLevels);
+  } else {
+    bitsetClear(_avoidBits);
+  }
+
+  // Force First Level
+  var is8Level = (rushKey === 'violet' || rushKey === 'red' || rushKey === 'yellow');
+  var forceFirstEnabled = !is8Level && document.getElementById('ffl-checkbox').checked;
+  var forceFirstIdx = -1;
+  if (forceFirstEnabled) {
+    var fflInput = document.getElementById('ffl-level').value.trim();
+    if (!fflInput) { showSearchError('Force First Level is enabled but no level was entered.'); return; }
+    var fflParsed = findLevelByName(fflInput);
+    if (fflParsed.error) { showSearchError('Force First Level: ' + fflParsed.error); return; }
+    forceFirstIdx = fflParsed.idx;
+    // Warn if forced level is also in Desired Starting Levels
+    if (targetIndices.indexOf(forceFirstIdx) !== -1) {
+      showSearchError('Force First Level "' + LEVEL_NAMES[forceFirstIdx] + '" is already listed in Desired Starting Levels. Remove it from one or the other.');
+      return;
+    }
+    // Warn if forced level is also in Excluded Levels
+    if (avoidEnabled && avoidSet[forceFirstIdx]) {
+      showSearchError('Force First Level "' + LEVEL_NAMES[forceFirstIdx] + '" is also listed in Excluded Levels. A level cannot be forced first and excluded at the same time.');
+      return;
+    }
+  }
+
+  // Build plain-object set (for result highlighting) + bitset (for hot loop)
+  var targetSet = {};
+  bitsetClear(_targetBits);
+  for (var i = 0; i < targetIndices.length; i++) {
+    targetSet[targetIndices[i]] = true;
+    bitsetSet(_targetBits, targetIndices[i]);
+  }
+  var tLen = targetIndices.length;
+  var stopAt = orderMatters ? tLen : searchDepth;
+
+  var multiMode = document.querySelector('input[name="resultmode"]:checked').value === 'multi';
+  var maxSeeds = multiMode ? Math.max(2, parseInt(document.getElementById('s-maxseeds').value) || 5) : 1;
+  var MAX_SEED = 2147483647;
+  var CHUNK         = 50000;   // initial conservative value — auto-calibrates after first tick
+  var CPU_TARGET_MS = 16;      // target ms per tick for ~60fps UI responsiveness
+  var cpuCalibrated = false;
+  var seed     = 1;
+  var foundSeeds = [];
+  var startTime = Date.now();
+
+  searching = true;
+  document.getElementById('search-btn').style.display = 'none';
+  document.getElementById('stop-btn').style.display   = 'block';
+  document.getElementById('search-result').classList.remove('visible');
+  document.getElementById('multi-result-list').innerHTML = '';
+  document.getElementById('search-result-label').textContent = 'Found Seeds';
+  document.getElementById('progress-section').classList.add('visible');
+  document.getElementById('progress-fill').style.width = '0%';
+  document.getElementById('progress-pct').textContent  = '0%';
+  document.getElementById('progress-speed').textContent = '';
+  setStatus('0 / 2,147,483,647 seeds searched');
+
+  // ── Try GPU path first ────────────────────────────────────────────────────
+  var gpuParams = {
+    numLevels, targetBits: [_targetBits[0], _targetBits[1], _targetBits[2]],
+    avoidBits:  [_avoidBits[0],  _avoidBits[1],  _avoidBits[2]],
+    tLen, searchDepth, avoidDepth,
+    avoidEnabled, forceFirstEnabled, forceFirstIdx, orderMatters,
+    targetIndices, maxSeeds,
+    onFound: function(s) {
+      var order = fullShuffle(numLevels, s);
+      foundSeeds.push({ seed: s, order: order });
+      addSeedResult(s, order, targetSet, foundSeeds.length,
+        forceFirstEnabled ? forceFirstIdx : -1,
+        avoidEnabled ? avoidSet : {}, avoidEnabled ? avoidDepthVal : 0);
+    },
+    onProgress: function(done, total, rate) {
+      if (!searching) return;
+      var pct = Math.min(99, Math.round(done / total * 100));
+      document.getElementById('progress-fill').style.width = pct + '%';
+      document.getElementById('progress-pct').textContent  = pct + '%';
+      document.getElementById('progress-speed').textContent =
+        rate > 0 ? (rate >= 1e6 ? (rate/1e6).toFixed(1)+'M' : Math.round(rate/1000)+'K') + ' seeds/s ⚡GPU  (chunk ' + (GPU_CHUNK/1000).toFixed(0) + 'k)' : '';
+      setStatus(done.toLocaleString() + ' / 2,147,483,647 seeds searched');
+    },
+    onDone: function(seeds) {
+      searchDone();
+      setStatus(seeds.length > 0
+        ? 'Found ' + seeds.length + ' seed' + (seeds.length > 1 ? 's' : '') + '.'
+        : 'No matching seed found in full range.');
+    }
+  };
+
+  if (engineMode === 'gpu' && gpuReady) {
+    gpuSearch(gpuParams).then(function(didGpu) {
+      if (!didGpu) cpuTick(); // fallback if GPU path fails mid-search
+    });
+    return; // GPU path takes over
+  }
+
+  // CPU path — either user chose CPU or GPU unavailable
+  cpuTick();
+
+  function cpuTick() {
+    if (!searching) return;
+
+    var end = Math.min(seed + CHUNK, MAX_SEED + 1);
+
+    for (; seed < end; seed++) {
+      // ── Init RNG for this seed ──
+      var mj = 161803398 - (seed < 0 ? -seed : seed);
+      _SA[55] = mj; var mk = 1;
+      for (var i = 1; i < 55; i++) {
+        var ix = (21*i)%55; _SA[ix]=mk; mk=mj-mk; if(mk<0)mk+=MBIG; mj=_SA[ix];
+      }
+      for (var kk = 1; kk < 5; kk++) {
+        for (var i = 1; i < 56; i++) {
+          var n=i+30; if(n>=55)n-=55; _SA[i]-=_SA[1+n]; if(_SA[i]<0)_SA[i]+=MBIG;
+        }
+      }
+
+      // ── Reset identity array ──
+      for (var i = 0; i < numLevels; i++) _arr[i] = i;
+
+      // ── Full shuffle ──────────────────────────────────────────────────────
+      var ie = 0, ixx = 21;
+      var match = true, foundCount = 0;
+
+      for (var i = 0; i < numLevels; i++) {
+        if (++ie  >= 56) ie  = 1;
+        if (++ixx >= 56) ixx = 1;
+        var r = _SA[ie] - _SA[ixx];
+        if (r === MBIG) r--; if (r < 0) r += MBIG;
+        _SA[ie] = r;
+        var j = Math.floor(r * INV * numLevels);
+        var tmp = _arr[i]; _arr[i] = _arr[j]; _arr[j] = tmp;
+      }
+
+      // ── Match check (always after full shuffle) ───────────────────────────
+      if (orderMatters) {
+        // Exact order: positions 0..tLen-1 must match exactly
+        for (var i = 0; i < tLen; i++) {
+          if (_arr[i] !== targetIndices[i]) { match = false; break; }
+        }
+      } else {
+        // Any order: all targets must appear within searchDepth positions
+        if (forceFirstEnabled && _arr[0] !== forceFirstIdx) {
+          match = false;
+        } else {
+          foundCount = 0;
+          for (var ci = 0; ci < searchDepth; ci++) {
+            if (bitsetTest(_targetBits, _arr[ci])) foundCount++;
+          }
+          match = (foundCount === tLen);
+        }
+      }
+
+      // Avoid check: none of the excluded levels may appear in first avoidDepth positions
+      if (match && avoidEnabled) {
+        for (var ai = 0; ai < avoidDepth; ai++) {
+          if (bitsetTest(_avoidBits, _arr[ai])) { match = false; break; }
+        }
+      }
+
+      if (match) {
+        var order = fullShuffle(numLevels, seed);
+        foundSeeds.push({ seed: seed, order: order });
+        addSeedResult(seed, order, targetSet, foundSeeds.length, forceFirstEnabled ? forceFirstIdx : -1, avoidEnabled ? avoidSet : {}, avoidEnabled ? avoidDepthVal : 0);
+        if (foundSeeds.length >= maxSeeds) {
+          searchDone();
+          setStatus('Found ' + foundSeeds.length + ' seed' + (foundSeeds.length > 1 ? 's' : '') + '.');
+          return;
+        }
+      }
+    }
+
+    // ── Update UI and schedule next chunk ──
+    var total   = seed;
+    var pct     = Math.min(99, Math.round(total / MAX_SEED * 100));
+    var elapsed = (Date.now() - startTime) / 1000;
+    var rate    = elapsed > 0.5 ? Math.round(total / elapsed) : 0;
+    var eta     = rate > 0 ? (MAX_SEED - total) / rate : 0;
+    var etaStr  = eta > 3600 ? (eta/3600).toFixed(1)+'h' : eta > 60 ? Math.round(eta/60)+'m' : Math.round(eta)+'s';
+
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-pct').textContent  = pct + '%';
+    document.getElementById('progress-speed').textContent = rate > 0 ? rate.toLocaleString()+'/s  |  ETA: '+etaStr : '';
+    setStatus(total.toLocaleString() + ' / 2,147,483,647 seeds searched');
+
+    // ── Auto-calibrate CHUNK after first tick ──────────────────────────────
+    if (!cpuCalibrated) {
+      var tickMs = elapsed * 1000;
+      if (tickMs > 0) {
+        var scale = CPU_TARGET_MS / Math.max(tickMs, 1);
+        CHUNK = Math.max(10000, Math.min(500000, Math.round(CHUNK * scale / 10000) * 10000));
+        cpuCalibrated = true;
+        console.log('[v3] CPU calibration: ' + tickMs.toFixed(1) + 'ms for first tick → CHUNK set to ' + CHUNK.toLocaleString());
+      }
+    }
+
+    if (seed > MAX_SEED) {
+      searchDone();
+      if (foundSeeds.length === 0) {
+        showSearchError('No seeds found for these parameters.');
+      } else {
+        setStatus('Search complete. Found ' + foundSeeds.length + ' seed' + (foundSeeds.length > 1 ? 's' : '') + '.');
+      }
+      return;
+    }
+
+    searchTimer = setTimeout(cpuTick, 0);
+  } // end cpuTick
+
+  // CPU entry: only reached when gpuReady is false
+  // (GPU path calls cpuTick() directly from gpuSearch().then())
+}
+
+function stopSearch() {
+  searchDone();
+  setStatus('Search stopped.');
+}
+
+function searchDone() {
+  searching = false;
+  if (searchTimer) { clearTimeout(searchTimer); searchTimer = null; }
+  document.getElementById('search-btn').style.display = 'block';
+  document.getElementById('stop-btn').style.display   = 'none';
+  document.getElementById('progress-section').classList.remove('visible');
+}
+
+function addSeedResult(seed, order, targetSet, index, forceIdx, avoidSet, avoidDepth) {
+  var list = document.getElementById('multi-result-list');
+
+  var entry = document.createElement('div');
+  entry.className = 'seed-entry';
+
+  // Header (always visible, click to expand)
+  var header = document.createElement('div');
+  header.className = 'seed-entry-header';
+  header.innerHTML =
+    '<div><span class="seed-num-label">Seed</span><span class="seed-num">' + seed + '</span></div>' +
+    '<div class="seed-meta-wrap"><span class="seed-match-label">Match</span><span class="seed-match-num">#' + index + '</span></div>' +
+    '<button class="seed-copy-btn" data-seed="' + seed + '">COPY</button>' +
+    '<span class="seed-chevron">&#9660;</span>';
+  header.onclick = function(e) {
+    if (e.target.classList.contains('seed-copy-btn')) {
+      var btn = e.target;
+      var seedVal = btn.getAttribute('data-seed');
+      try {
+        navigator.clipboard.writeText(seedVal).then(function() {
+          btn.textContent = 'COPIED';
+          btn.classList.add('copied');
+          setTimeout(function() { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 1500);
+        });
+      } catch(err) {
+        // Fallback for older browsers
+        var ta = document.createElement('textarea');
+        ta.value = seedVal;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        btn.textContent = 'COPIED';
+        btn.classList.add('copied');
+        setTimeout(function() { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 1500);
+      }
+      return;
+    }
+    entry.classList.toggle('open');
+  };
+
+  // Body (level sequence, hidden until expanded)
+  var body = document.createElement('div');
+  body.className = 'seed-entry-body';
+  var seqList = document.createElement('div');
+  seqList.className = 'sequence-list';
+  for (var pos = 0; pos < order.length; pos++) {
+    var idx = order[pos];
+    var div = document.createElement('div');
+    var isHighlighted = targetSet[idx] || idx === forceIdx;
+    var isExcluded = !isHighlighted && avoidSet && avoidSet[idx];
+    div.className = 'seq-item' + (isHighlighted ? ' highlighted' : isExcluded ? ' excluded' : '');
+    div.innerHTML = '<span class="num">'+(pos+1)+'.</span> '+levelLabel(idx);
+    seqList.appendChild(div);
+  }
+  body.appendChild(seqList);
+
+  entry.appendChild(header);
+  entry.appendChild(body);
+
+  // Auto-expand the first result
+  if (index === 1) entry.classList.add('open');
+
+  list.appendChild(entry);
+
+  // Update label count and show box
+  document.getElementById('search-result-label').textContent =
+    'Found ' + index + ' seed' + (index > 1 ? 's' : '');
+  document.getElementById('search-result').classList.add('visible');
+}
+
+function showSearchError(msg) {
+  var list = document.getElementById('multi-result-list');
+  list.innerHTML = '';
+  var errEl = document.createElement('div');
+  errEl.style.cssText = 'font-size:14px;color:var(--accent2);padding:12px 4px;line-height:1.6;';
+  errEl.textContent = msg;
+  list.appendChild(errEl);
+  document.getElementById('search-result-label').textContent = 'No Results';
+  document.getElementById('search-result').classList.add('visible');
+}
+
+// ── Generate tab ───────────────────────────────────────────────────────────
+function generateOrder() {
+  var rushKey = document.getElementById('g-rush').value;
+  var numLevels = (rushKey === 'violet' || rushKey === 'red' || rushKey === 'yellow') ? 8 : parseInt(rushKey);
+  setRush(rushKey);
+  var seed      = parseInt(document.getElementById('g-seed').value);
+  if (!seed || seed < 1) { alert('Please enter a valid seed (positive integer).'); return; }
+  var order = fullShuffle(numLevels, seed);
+  document.getElementById('gen-seed-display').textContent = seed;
+  var list = document.getElementById('gen-sequence');
+  list.innerHTML = '';
+  for (var pos = 0; pos < order.length; pos++) {
+    var div = document.createElement('div');
+    div.className = 'seq-item';
+    div.innerHTML = '<span class="num">'+(pos+1)+'.</span> '+levelLabel(order[pos]);
+    list.appendChild(div);
+  }
+  document.getElementById('gen-result').classList.add('visible');
+}
+
+// ── Tabs ───────────────────────────────────────────────────────────────────
+var TAB_SUBTITLES = {
+  'search':      'Search up to 2.1 billion seeds to find ones where your desired levels appear early. Supports all four rush types.',
+  'generate':    'Enter any seed number to instantly see the full level order it produces for the selected rush.',
+  'splits':      'Paste your gold and segment splits in standard level order and reorder them to match a specific seed\u2019s play order.',
+  'standardize': 'Paste splits recorded in seed play order and convert them back to standard level order for your splits file.',
+  'timer':       'Time your runs by entering cumulative split times per level. Outputs segment times ready for LiveSplit or Google Sheets.',
+};
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('tab-'+tab).classList.add('active');
+  btn.classList.add('active');
+  var sub = document.getElementById('page-subtitle');
+  if (sub && TAB_SUBTITLES[tab]) sub.textContent = TAB_SUBTITLES[tab];
+}
+
+// ── Splits Updater ──────────────────────────────────────────────────────────
+function parseSplitTimes(raw) {
+  return raw.split('\n')
+    .map(function(l) { return l.trim(); })
+    .filter(function(l) { return l.length > 0; });
+}
+
+function saveSplits() {
+  var gold = document.getElementById('sp-gold').value.trim();
+  var seg  = document.getElementById('sp-seg').value.trim();
+  if (!gold && !seg) { setCacheStatus('Nothing to save.', false); return; }
+  try {
+    localStorage.setItem('rsf_gold', gold);
+    localStorage.setItem('rsf_seg',  seg);
+    setCacheStatus('Saved to browser cache.', true);
+  } catch(e) {
+    setCacheStatus('Save failed (storage unavailable).', false);
+  }
+}
+
+function loadSplits() {
+  try {
+    var gold = localStorage.getItem('rsf_gold') || '';
+    var seg  = localStorage.getItem('rsf_seg')  || '';
+    if (!gold && !seg) { setCacheStatus('No saved splits found.', false); return; }
+    document.getElementById('sp-gold').value = gold;
+    document.getElementById('sp-seg').value  = seg;
+    setCacheStatus('Loaded from cache.', true);
+  } catch(e) {
+    setCacheStatus('Load failed (storage unavailable).', false);
+  }
+}
+
+function clearSplits() {
+  try {
+    localStorage.removeItem('rsf_gold');
+    localStorage.removeItem('rsf_seg');
+    setCacheStatus('Cache cleared.', false);
+  } catch(e) {
+    setCacheStatus('Clear failed.', false);
+  }
+}
+
+function setCacheStatus(msg, ok) {
+  var el = document.getElementById('cache-status');
+  el.textContent = msg;
+  el.className = 'cache-status' + (ok ? ' saved' : '');
+  setTimeout(function() { el.textContent = ''; el.className = 'cache-status'; }, 3000);
+}
+
+function generateSplits() {
+  var seed = parseInt(document.getElementById('sp-seed').value);
+  showSplitsError('sp', '');
+  if (!seed || seed < 1) { showSplitsError('sp', 'Please enter a valid seed number.'); return; }
+
+  var goldTimes = parseSplitTimes(document.getElementById('sp-gold').value);
+  var segTimes  = parseSplitTimes(document.getElementById('sp-seg').value);
+
+  if (!goldTimes.length && !segTimes.length) {
+    showSplitsError('sp', 'Please paste at least Gold or Segment splits.'); return;
+  }
+
+  var spRushKey = document.getElementById('sp-rush').value;
+  var spNumLevels = (spRushKey === 'violet' || spRushKey === 'red' || spRushKey === 'yellow') ? 8 : 96;
+  var spRushName = RUSH_DISPLAY_NAMES[spRushKey] || spRushKey;
+
+  // Validate line counts BEFORE doing anything else
+  if (goldTimes.length && goldTimes.length !== spNumLevels) {
+    showSplitsError('sp', 'Gold Splits has ' + goldTimes.length + ' line' + (goldTimes.length !== 1 ? 's' : '') + ', but ' + spRushName + ' rush expects ' + spNumLevels + '. Please check your splits and try again.');
+    return;
+  }
+  if (segTimes.length && segTimes.length !== spNumLevels) {
+    showSplitsError('sp', 'Segment Splits has ' + segTimes.length + ' line' + (segTimes.length !== 1 ? 's' : '') + ', but ' + spRushName + ' rush expects ' + spNumLevels + '. Please check your splits and try again.');
+    return;
+  }
+
+  setRush(spRushKey);
+  var order = fullShuffle(spNumLevels, seed);
+  document.getElementById('splits-seed-display').textContent = seed;
+
+  // Build reordered output arrays — one time per line, in seed level order
+  var goldOut = [], segOut = [];
+  for (var pos = 0; pos < order.length; pos++) {
+    var levelIdx = order[pos];
+    if (goldTimes.length) goldOut.push(goldTimes[levelIdx] || '');
+    if (segTimes.length)  segOut.push(segTimes[levelIdx]   || '');
+  }
+
+  // Trim trailing blank lines
+  function trimTrailing(arr) {
+    while (arr.length && arr[arr.length-1] === '') arr.pop();
+    return arr;
+  }
+
+  if (goldOut.length) {
+    trimTrailing(goldOut);
+    resetMedalViews(['splits-gold-out','splits-seg-out']);
+    spLastGold = goldOut.slice();
+    document.getElementById('splits-gold-out').value = goldOut.map(function(t){return splitsFormatTime(t,spFmt);}).join('\n');
+    document.getElementById('splits-gold-wrap').style.display = 'block';
+  } else {
+    document.getElementById('splits-gold-wrap').style.display = 'none';
+  }
+
+  if (segOut.length) {
+    trimTrailing(segOut);
+    spLastSeg = segOut.slice();
+    document.getElementById('splits-seg-out').value = segOut.map(function(t){return splitsFormatTime(t,spFmt);}).join('\n');
+    document.getElementById('splits-seg-wrap').style.display = 'block';
+  } else {
+    document.getElementById('splits-seg-wrap').style.display = 'none';
+  }
+
+  // Always output level names in seed order
+  var namesOut = [];
+  for (var pos = 0; pos < order.length; pos++) {
+    namesOut.push(levelLabel(order[pos]));
+  }
+  spLevelNames = namesOut.slice();
+  document.getElementById('splits-names-out').value = namesOut.join('\n');
+
+  document.getElementById('splits-result').classList.add('visible');
+}
+
+function copySplits(id) {
+  var ta = document.getElementById(id);
+  ta.select();
+  ta.setSelectionRange(0, 99999);
+  try {
+    document.execCommand('copy');
+    setCacheStatus('Copied!', true);
+  } catch(e) {
+    setCacheStatus('Copy failed — please select and copy manually.', false);
+  }
+}
+
+// ── Standardize Splits ────────────────────────────────────────────────────
+function saveStdSplits() {
+  var gold = document.getElementById('std-gold').value.trim();
+  var seg  = document.getElementById('std-seg').value.trim();
+  if (!gold && !seg) { setStdCacheStatus('Nothing to save.', false); return; }
+  try {
+    localStorage.setItem('rsf_std_gold', gold);
+    localStorage.setItem('rsf_std_seg',  seg);
+    setStdCacheStatus('Saved to browser cache.', true);
+  } catch(e) { setStdCacheStatus('Save failed (storage unavailable).', false); }
+}
+
+function loadStdSplits() {
+  try {
+    var gold = localStorage.getItem('rsf_std_gold') || '';
+    var seg  = localStorage.getItem('rsf_std_seg')  || '';
+    if (!gold && !seg) { setStdCacheStatus('No saved splits found.', false); return; }
+    document.getElementById('std-gold').value = gold;
+    document.getElementById('std-seg').value  = seg;
+    setStdCacheStatus('Loaded from cache.', true);
+  } catch(e) { setStdCacheStatus('Load failed (storage unavailable).', false); }
+}
+
+function clearStdSplits() {
+  try {
+    localStorage.removeItem('rsf_std_gold');
+    localStorage.removeItem('rsf_std_seg');
+    setStdCacheStatus('Cache cleared.', false);
+  } catch(e) { setStdCacheStatus('Clear failed.', false); }
+}
+
+function setStdCacheStatus(msg, ok) {
+  var el = document.getElementById('std-cache-status');
+  el.textContent = msg;
+  el.className = 'cache-status' + (ok ? ' saved' : '');
+  setTimeout(function() { el.textContent = ''; el.className = 'cache-status'; }, 3000);
+}
+
+function standardizeSplits() {
+  var seed = parseInt(document.getElementById('std-seed').value);
+  if (!seed || seed < 1) { alert('Please enter a valid seed number.'); return; }
+
+  var goldTimes = parseSplitTimes(document.getElementById('std-gold').value);
+  var segTimes  = parseSplitTimes(document.getElementById('std-seg').value);
+
+  if (!goldTimes.length && !segTimes.length) {
+    alert('Please paste at least Gold or Segment splits.'); return;
+  }
+
+  // Get the level order for this seed
+  // order[pos] = levelIdx, so order[0] is the first level played
+  // We need the inverse: given a levelIdx, what position was it played at?
+  var stdRushKey = document.getElementById('std-rush').value;
+  var stdNumLevels = (stdRushKey === 'violet' || stdRushKey === 'red' || stdRushKey === 'yellow') ? 8 : 96;
+  var stdRushName = RUSH_DISPLAY_NAMES[stdRushKey] || stdRushKey;
+
+  // Validate line counts BEFORE doing anything else
+  if (goldTimes.length && goldTimes.length !== stdNumLevels) {
+    showSplitsError('std', 'Gold Splits has ' + goldTimes.length + ' line' + (goldTimes.length !== 1 ? 's' : '') + ', but ' + stdRushName + ' rush expects ' + stdNumLevels + '. Please check your splits and try again.');
+    return;
+  }
+  if (segTimes.length && segTimes.length !== stdNumLevels) {
+    showSplitsError('std', 'Segment Splits has ' + segTimes.length + ' line' + (segTimes.length !== 1 ? 's' : '') + ', but ' + stdRushName + ' rush expects ' + stdNumLevels + '. Please check your splits and try again.');
+    return;
+  }
+
+  setRush(stdRushKey);
+  var order = fullShuffle(stdNumLevels, seed);
+
+  // Build inverse map: seedPosition[levelIdx] = position in seed order (0-indexed)
+  var seedPosition = new Array(stdNumLevels);
+  for (var pos = 0; pos < order.length; pos++) {
+    seedPosition[order[pos]] = pos;
+  }
+
+  // For each level in standard order (0..95), look up its seed position
+  // and pull the time from that position in the pasted splits
+  var goldOut = [], segOut = [];
+  for (var levelIdx = 0; levelIdx < 96; levelIdx++) {
+    var pos = seedPosition[levelIdx];
+    if (goldTimes.length) goldOut.push(pos < goldTimes.length ? goldTimes[pos] : '');
+    if (segTimes.length)  segOut.push(pos < segTimes.length  ? segTimes[pos]  : '');
+  }
+
+  function trimTrailing(arr) {
+    while (arr.length && arr[arr.length-1] === '') arr.pop();
+    return arr;
+  }
+
+  document.getElementById('std-seed-display').textContent = seed;
+  // Store level names in standard order for medal lookup
+  stdLevelNames = RUSH_LEVELS[stdRushKey] ? RUSH_LEVELS[stdRushKey].slice() : RUSH_LEVELS['96'].slice();
+
+  if (goldOut.length) {
+    trimTrailing(goldOut);
+    resetMedalViews(['std-gold-out','std-seg-out']);
+    stdLastGold = goldOut.slice();
+    document.getElementById('std-gold-out').value = goldOut.map(function(t){return splitsFormatTime(t,stdFmt);}).join('\n');
+    document.getElementById('std-gold-wrap').style.display = 'block';
+  } else {
+    document.getElementById('std-gold-wrap').style.display = 'none';
+  }
+
+  if (segOut.length) {
+    trimTrailing(segOut);
+    stdLastSeg = segOut.slice();
+    document.getElementById('std-seg-out').value = segOut.map(function(t){return splitsFormatTime(t,stdFmt);}).join('\n');
+    document.getElementById('std-seg-wrap').style.display = 'block';
+  } else {
+    document.getElementById('std-seg-wrap').style.display = 'none';
+  }
+
+  document.getElementById('std-result').classList.add('visible');
+}
+
+
+function toggleResultMode() {
+  var multi = document.querySelector('input[name="resultmode"]:checked').value === 'multi';
+  document.getElementById('maxseeds-wrap').style.display = multi ? 'block' : 'none';
+}
+
+function onRushChange(tab) {
+  GPU_CALIBRATED = false; // resets chunk calibration when rush changes
+  var sel = document.getElementById(tab + '-rush');
+  var rushKey = sel.value;
+  var is8Level = (rushKey === 'violet' || rushKey === 'red' || rushKey === 'yellow');
+  var maxDepth = is8Level ? 8 : 96;
+
+  // Update search depth max
+  var depthEl = document.getElementById('s-depth');
+  if (depthEl) {
+    depthEl.max = maxDepth;
+    if (parseInt(depthEl.value) > maxDepth) depthEl.value = maxDepth;
+    var avoidDepthEl = document.getElementById('avoid-depth');
+    if (avoidDepthEl) {
+      avoidDepthEl.max = maxDepth;
+      if (parseInt(avoidDepthEl.value) > maxDepth) avoidDepthEl.value = maxDepth;
+    }
+  }
+
+  // Only show/hide search tab UI elements when on the search tab
+  if (tab === 's') {
+    // Order Matters: show only for 8-level rushes, hide for White/Mikey
+    var orderField = document.getElementById('order-matters-field');
+    if (orderField) {
+      orderField.style.display = is8Level ? 'block' : 'none';
+      // Reset to No - Any Order when switching
+      document.getElementById('o-no').checked = true;
+    }
+
+    // Force First Level: show only for White/Mikey, hide for 8-level rushes
+    var forceFirstField = document.getElementById('force-first-field');
+    if (forceFirstField) {
+      forceFirstField.style.display = is8Level ? 'none' : 'block';
+      // Reset checkbox and hide input when switching away
+      if (is8Level) {
+        document.getElementById('ffl-checkbox').checked = false;
+        document.getElementById('ffl-wrap').classList.remove('visible');
+        document.getElementById('ffl-level').value = '';
+      }
+    }
+
+    // Clear Desired Starting Levels and avoid levels on rush switch
+    document.getElementById('s-levels').value = '';
+    document.getElementById('avoid-levels').value = '';
+    document.getElementById('avoid-checkbox').checked = false;
+    document.getElementById('avoid-wrap').classList.remove('visible');
+    updatePlaceholders(rushKey);
+  }
+}
+
+var RUSH_PLACEHOLDERS = {
+  '96':     'e.g. The Third Temple, Absolution, The Clocktower',
+  'violet': 'e.g. Doghouse, Razor, Chain',
+  'red':    'e.g. Fireball Traversal, Purify Traversal, Stomp Traversal',
+  'yellow': 'e.g. SFP, BM, Rocket'
+};
+
+function onSplitsRushChange() {
+  var rushKey = document.getElementById('sp-rush').value;
+  var hint = RUSH_STANDARD_HINT[rushKey] || RUSH_STANDARD_HINT['96'];
+  document.getElementById('sp-gold-hint').textContent = hint;
+  document.getElementById('sp-seg-hint').textContent  = hint;
+}
+
+function onStdRushChange() {
+  // Seed-order hint stays the same wording regardless of rush
+  // but update to clarify which rush's seed order is expected
+  var rushKey = document.getElementById('std-rush').value;
+  var rushName = RUSH_DISPLAY_NAMES[rushKey] || 'selected rush';
+  var hint = 'Paste times in seed order (the order your ' + rushName + ' seed plays levels).';
+  document.getElementById('std-gold-hint').textContent = hint;
+  document.getElementById('std-seg-hint').textContent  = hint;
+}
+
+function updatePlaceholders(rushKey) {
+  var ph = RUSH_PLACEHOLDERS[rushKey] || RUSH_PLACEHOLDERS['96'];
+  document.getElementById('s-levels').placeholder = ph;
+}
+
+function onOrderChange() {
+  var exactOrder = document.getElementById('o-yes').checked;
+  var depthField = document.getElementById('search-depth-field');
+  if (depthField) {
+    depthField.style.display = exactOrder ? 'none' : 'block';
+    // Reset depth to default when switching back to Any Order
+    if (!exactOrder) {
+      var rushKey = document.getElementById('s-rush').value;
+      var is8Level = (rushKey === 'violet' || rushKey === 'red' || rushKey === 'yellow');
+      document.getElementById('s-depth').value = is8Level ? 8 : 10;
+    }
+  }
+}
+
+function toggleAvoid() {
+  var enabled = document.getElementById('avoid-checkbox').checked;
+  var wrap = document.getElementById('avoid-wrap');
+  wrap.classList.toggle('visible', enabled);
+  if (!enabled) {
+    document.getElementById('avoid-levels').value = '';
+    document.getElementById('avoid-depth').value = '5';
+  }
+}
+
+function syncDepthToLevels() {
+  var raw   = document.getElementById('s-levels').value;
+  var count = raw.split(',').map(function(s){ return s.trim(); }).filter(Boolean).length;
+  if (count === 0) return;
+  var depthEl = document.getElementById('s-depth');
+  var current = parseInt(depthEl.value) || 1;
+  if (current < count) depthEl.value = count;
+  depthEl.min = Math.max(1, count);
+}
+
+function toggleForceFirst() {
+  var enabled = document.getElementById('ffl-checkbox').checked;
+  var wrap = document.getElementById('ffl-wrap');
+  wrap.classList.toggle('visible', enabled);
+  if (!enabled) document.getElementById('ffl-level').value = '';
+}
+
+function showSplitsError(tabId, msg) {
+  var el = document.getElementById(tabId + '-error');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = msg ? 'block' : 'none';
+}
+
+function setStatus(msg) { document.getElementById('status-text').textContent = msg; }
+
+// ════════════════════════════════════════════════════════════════════════════
+// SPLITS FORMAT TOGGLES
+// ════════════════════════════════════════════════════════════════════════════
+var spFmt  = 'plain';
+var stdFmt = 'plain';
+var spLastGold=[], spLastSeg=[];
+var stdLastGold=[], stdLastSeg=[];
+
+function parseSplitTimeToSecs(raw) {
+  var s = (raw||'').trim();
+  var m = s.match(/^(\d+):(\d{1,2})(?:\.(\d+))?$/);
+  if (m) return parseInt(m[1])*60 + parseInt(m[2]) + (m[3]?parseFloat('0.'+m[3]):0);
+  var m2 = s.match(/^(\d+)(?:\.(\d+))?$/);
+  if (m2) return parseInt(m2[1]) + (m2[2]?parseFloat('0.'+m2[2]):0);
+  return null;
+}
+
+function splitsFormatTime(raw, fmt) {
+  var secs = parseSplitTimeToSecs(raw);
+  if (secs === null) return raw;
+  if (fmt === 'mmss') {
+    var mins = Math.floor(secs/60), s = secs - mins*60;
+    var ss = s.toFixed(3); if (s<10) ss='0'+ss;
+    return (mins<10?'0'+mins:''+mins)+':'+ss;
+  }
+  if (secs < 60) return secs.toFixed(3).replace(/\.?0+$/,'') || '0';
+  var mins2=Math.floor(secs/60), s2=secs-mins2*60;
+  var ss2=s2.toFixed(3); if(s2<10) ss2='0'+ss2;
+  return mins2+':'+ss2;
+}
+
+function spSetFormat(fmt) {
+  spFmt = fmt;
+  document.getElementById('sp-fmt-plain').classList.toggle('active', fmt==='plain');
+  document.getElementById('sp-fmt-mmss').classList.toggle('active', fmt==='mmss');
+  if (spLastGold.length) document.getElementById('splits-gold-out').value = spLastGold.map(function(t){return splitsFormatTime(t,fmt);}).join('\n');
+  if (spLastSeg.length)  document.getElementById('splits-seg-out').value  = spLastSeg.map(function(t){return splitsFormatTime(t,fmt);}).join('\n');
+  refreshMedalViews();
+}
+
+function stdSetFormat(fmt) {
+  stdFmt = fmt;
+  document.getElementById('std-fmt-plain').classList.toggle('active', fmt==='plain');
+  document.getElementById('std-fmt-mmss').classList.toggle('active', fmt==='mmss');
+  if (stdLastGold.length) document.getElementById('std-gold-out').value = stdLastGold.map(function(t){return splitsFormatTime(t,fmt);}).join('\n');
+  if (stdLastSeg.length)  document.getElementById('std-seg-out').value  = stdLastSeg.map(function(t){return splitsFormatTime(t,fmt);}).join('\n');
+  refreshMedalViews();
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// RUN TIMER
+// ════════════════════════════════════════════════════════════════════════════
+var rtMode='seed', rtRush='96', rtFmt='plain', rtLastSegs=[], rtMedalNames=[];
+
+var RT_ALIASES = {
+  'glort':'glass port','ttt':'the third temple','ct':'the clocktower',
+  'clocktower':'the clocktower','ase':'all seeing eye',
+  'rsi':'resident saw i','rs1':'resident saw i',
+  'rsii':'resident saw ii','rs2':'resident saw ii',
+  'eti':'elevate traversal i','et1':'elevate traversal i',
+  'etii':'elevate traversal ii','et2':'elevate traversal ii',
+  'boof trav':'book of life traversal','sfp':'sunset flip powerbomb',
+  'bm':'balloon mountain','cg':'climbing gym',
+  'fish sup':'fisherman suplex','fish soup':'fisherman suplex',
+  // In-game code names
+  'tut_movement':'movement',
+  'tut_shootingrange':'pummel',
+  'slugger':'gunner',
+  'tut_frog':'cascade',
+  'tut_jump':'elevate',
+  'grid_tut_balloon':'bounce',
+  'tut_bomb2':'purify',
+  'tut_bombjump':'climb',
+  'tut_fasttrack':'fasttrack',
+  'grid_port':'glass port',
+  'grid_pagoda':'take flight',
+  'tut_rifle':'godspeed',
+  'tut_riflejock':'dasher',
+  'tut_dashenemy':'thrasher',
+  'grid_jumpdash':'outstretched',
+  'grid_smackdown':'smackdown',
+  'grid_meaty_balloons':'catwalk',
+  'grid_fast_balloon':'fastlane',
+  'grid_dragon2':'distinguish',
+  'grid_dashdance':'dancer',
+  'tut_guardian':'guardian',
+  'tut_uzi':'stomp',
+  'tut_jumper':'jumper',
+  'tut_bomb':'dash tower',
+  'grid_descend':'descent',
+  'grid_stamperout':'driller',
+  'grid_cruise':'canals',
+  'grid_sprint':'sprint',
+  'grid_mountain':'mountain',
+  'grid_superkinetic':'superkinetic',
+  'grid_arrival':'arrival',
+  'floating':'forgotten city',
+  'grid_boss_yellow':'the clocktower',
+  'grid_hophop':'fireball',
+  'grid_ringer_tutorial':'ringer',
+  'grid_ringer_exploration':'cleaner',
+  'grid_hopscotch':'warehouse',
+  'grid_boom':'boom',
+  'grid_snake_in_my_boot':'streets',
+  'grid_flock':'steps',
+  'grid_bombs_ahoy':'demolition',
+  'grid_arcs':'arcs',
+  'grid_apartment':'apartment',
+  'tut_tripwire':'hanging gardens',
+  'grid_tangled':'tangled',
+  'grid_hunt':'waterworks',
+  'grid_cannons':'killswitch',
+  'grid_falling':'falling',
+  'tut_shocker2':'shocker',
+  'tut_shocker':'bouquet',
+  'grid_prepare':'prepare',
+  'grid_tripmaze':'triptrack',
+  'grid_race':'race',
+  'tut_forcefield2':'bubble',
+  'grid_shield':'shield',
+  'sa l vage2':'overlook',
+  'grid_vertical':'pop',
+  'grid_minefield':'minefield',
+  'tut_mimic':'mimic',
+  'grid_mimicpop':'trigger',
+  'grid_swarm':'greenhouse',
+  'grid_switch':'sweep',
+  'grid_traps2':'fuse',
+  'tut_rocketjump':"heaven's edge",
+  'tut_zipline':'zipline',
+  'grid_climbang':'swing',
+  'grid_rocketuzi':'chute',
+  'grid_crashland':'crash',
+  'grid_escalate':'ascent',
+  'grid_spiderclaus':'straightaway',
+  'grid_firecracker_2':'firecracker',
+  'grid_spiderman':'streak',
+  'grid_destruction':'mirror',
+  'grid_heat':'escalation',
+  'grid_bolt':'bolt',
+  'grid_pon':'godstreak',
+  'grid_charge':'plunge',
+  'grid_mimicfinale':'mayhem',
+  'grid_barrage':'barrage',
+  'grid_1gun':'estate',
+  'grid_heck':'trapwire',
+  'grid_antfarm':'ricochet',
+  'grid_fortress':'fortress',
+  'grid_godtemple_entry':'holy ground',
+  'grid_boss_godsdeathtemple':'the third temple',
+  'grid_exterminator':'spree',
+  'grid_fever':'breakthrough',
+  'grid_skipslide':'glide',
+  'grid_closer':'closer',
+  'grid_hike':'hike',
+  'grid_skip':'switch',
+  'grid_ceiling':'access',
+  'grid_boop':'congregation',
+  'grid_triprap':'sequence',
+  'grid_ziprap':'marathon',
+  'tut_origin':'sacrifice',
+  'grid_boss_rapture':'absolution',
+  'sidequest_obstacle_pistol':'elevate traversal i',
+  'sidequest_obstacle_pistol_shoot':'elevate traversal ii',
+  'sidequest_obstacle_machinegun':'purify traversal',
+  'sidequest_obstacle_rifle_2':'godspeed traversal',
+  'sidequest_obstacle_uzi2':'stomp traversal',
+  'sidequest_obstacle_shotgun':'fireball traversal',
+  'sidequest_obstacle_rocketlauncher':'dominion traversal',
+  'sidequest_rapture_quest':'book of life traversal',
+  'sidequest_dodger':'doghouse',
+  'grid_glasspath':'choker',
+  'grid_glasspath2':'chain',
+  'grid_hellvator':'hellevator',
+  'grid_glasspath3':'razor',
+  'sidequest_all_seeing_eye':'all seeing eye',
+  'sidequest_residentsawb':'resident saw i',
+  'sidequest_residentsaw':'resident saw ii',
+  'sidequest_sunset_flip_powerbomb':'sunset flip powerbomb',
+  'grid_balloonlair':'balloon mountain',
+  'sidequest_barrel_climb':'climbing gym',
+  'sidequest_fisherman_suplex':'fisherman suplex',
+  'sidequest_stf':'stf',
+  'sidequest_arenasixnine':'arena',
+  'sidequest_attitude_adjustment':'attitude adjustment',
+  'sidequest_rocketgodz':'rocket'
+};
+
+function onRtRushChange() {
+  rtRush = document.getElementById('rt-rush').value;
+  rtClearResults(); rtClearError();
+  if (rtMode==='manual') rtBuildManualRows(); else rtHideLevels();
+}
+
+function rtSetMode(mode) {
+  rtMode = mode;
+  document.getElementById('rt-mode-seed-btn').classList.toggle('active', mode==='seed');
+  document.getElementById('rt-mode-manual-btn').classList.toggle('active', mode==='manual');
+  document.getElementById('rt-seed-panel').style.display = mode==='seed'?'block':'none';
+  rtClearResults(); rtClearError();
+  if (mode==='manual') rtBuildManualRows(); else rtHideLevels();
+}
+
+function rtHideLevels() {
+  document.getElementById('rt-levels-panel').style.display='none';
+  document.getElementById('rt-calc-btn').style.display='none';
+}
+
+function rtShowLevels() {
+  document.getElementById('rt-levels-panel').style.display='block';
+  document.getElementById('rt-calc-btn').style.display='block';
+}
+
+function rtRushPlaceholder() {
+  var lvls=RUSH_LEVELS[rtRush];
+  return 'e.g. '+lvls[0]+', '+lvls[1]+'...';
+}
+
+function rtBuildSeedRows(names) {
+  document.getElementById('rt-levels-label').textContent='Level Order & Split Times';
+  document.getElementById('rt-levels-hint').textContent='Levels are in seed play order. Enter cumulative split time at the end of each level.';
+  var tbody=document.getElementById('rt-levels-body');
+  tbody.innerHTML='';
+  names.forEach(function(name,i){
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td><span style="font-size:11px;color:var(--text-dim);display:inline-block;width:28px;text-align:right;padding-right:10px;">'+(i+1)+'</span></td>'+
+      '<td><input type="text" value="'+rtEsc(name)+'" readonly tabindex="-1" style="background:transparent;border:none;color:var(--text);font-family:var(--mono);font-size:14px;padding:8px 4px;width:100%;outline:none;"></td>'+
+      '<td><input type="text" class="rt-time-input" placeholder="e.g. 19.546 or 1:04.565" style="background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:14px;padding:8px 10px;width:100%;outline:none;text-align:right;transition:border-color 0.15s;"></td>';
+    tbody.appendChild(tr);
+  });
+  rtShowLevels();
+}
+
+function rtBuildManualRows() {
+  var levels=RUSH_LEVELS[rtRush];
+  document.getElementById('rt-levels-label').textContent='Levels & Split Times';
+  document.getElementById('rt-levels-hint').textContent='Enter each level name and its cumulative split time.';
+  var tbody=document.getElementById('rt-levels-body');
+  tbody.innerHTML='';
+  var ph=rtRushPlaceholder();
+  levels.forEach(function(_,i){
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td><span style="font-size:11px;color:var(--text-dim);display:inline-block;width:28px;text-align:right;padding-right:10px;">'+(i+1)+'</span></td>'+
+      '<td><input type="text" class="rt-name-input" placeholder="'+ph+'" style="background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:14px;padding:8px 10px;width:100%;outline:none;transition:border-color 0.15s;"></td>'+
+      '<td><input type="text" class="rt-time-input" placeholder="e.g. 19.546 or 1:04.565" style="background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:14px;padding:8px 10px;width:100%;outline:none;text-align:right;transition:border-color 0.15s;"></td>';
+    tbody.appendChild(tr);
+  });
+  rtShowLevels();
+}
+
+function rtLoadSeed() {
+  rtClearError(); rtClearResults();
+  var seed=parseInt(document.getElementById('rt-seed').value);
+  if (!seed||seed<1||seed>2147483647){rtShowError('Please enter a valid seed number.');return;}
+  rtRush=document.getElementById('rt-rush').value;
+  var levels=RUSH_LEVELS[rtRush];
+  var numLevels=(rtRush==='violet'||rtRush==='red'||rtRush==='yellow')?8:96;
+  var order=fullShuffle(numLevels,seed);
+  rtBuildSeedRows(order.map(function(i){return levels[i];}));
+}
+
+function rtParseTime(raw) {
+  var s=raw.trim(); if(!s)return null;
+  var m=s.match(/^(\d+):(\d{1,2})(?:\.(\d+))?$/);
+  if(m)return parseInt(m[1])*60+parseInt(m[2])+(m[3]?parseFloat('0.'+m[3]):0);
+  var m2=s.match(/^(\d+)(?:\.(\d+))?$/);
+  if(m2)return parseInt(m2[1])+(m2[2]?parseFloat('0.'+m2[2]):0);
+  return null;
+}
+
+function rtFormatTime(secs) {
+  if(rtFmt==='mmss'){
+    var mins=Math.floor(secs/60), s=secs-mins*60;
+    var ss=s.toFixed(3); if(s<10)ss='0'+ss;
+    return (mins<10?'0'+mins:''+mins)+':'+ss;
+  }
+  return secs.toFixed(3).replace(/\.?0+$/,'')||'0';
+}
+
+function rtValidateName(raw) {
+  var q=raw.trim().toLowerCase(); if(!q)return null;
+  var levels=RUSH_LEVELS[rtRush];
+  for(var i=0;i<levels.length;i++) if(levels[i].toLowerCase()===q)return levels[i];
+  if(RT_ALIASES[q]){var t=RT_ALIASES[q];for(var i=0;i<levels.length;i++)if(levels[i].toLowerCase()===t)return levels[i];}
+  var matches=levels.filter(function(l){return l.toLowerCase().indexOf(q)!==-1;});
+  if(matches.length===1)return matches[0];
+  return null;
+}
+
+function rtCalculate() {
+  rtClearError(); rtClearResults();
+  var timeEls=document.querySelectorAll('#rt-levels-body .rt-time-input');
+  var nameEls=document.querySelectorAll('#rt-levels-body .rt-name-input');
+  var isManual=rtMode==='manual';
+  var names=[],times=[],errors=[];
+  timeEls.forEach(function(el){el.style.borderColor='';});
+  if(nameEls.length)nameEls.forEach(function(el){el.style.borderColor='';});
+  for(var i=0;i<timeEls.length;i++){
+    var tRaw=timeEls[i].value, nRaw=nameEls.length?nameEls[i].value:null;
+    if(isManual&&!tRaw.trim()&&(!nRaw||!nRaw.trim()))continue;
+    var displayName;
+    if(isManual){
+      var v=rtValidateName(nRaw||'');
+      if(!v){nameEls[i].style.borderColor='var(--accent2)';errors.push('Row '+(i+1)+': "'+nRaw+'" is not a recognised level.');continue;}
+      displayName=v;
+    }else{
+      displayName=document.querySelectorAll('#rt-levels-body input[readonly]')[i].value;
+    }
+    var t=rtParseTime(tRaw);
+    if(t===null){timeEls[i].style.borderColor='var(--accent2)';errors.push('Row '+(i+1)+' ('+displayName+'): invalid time "'+tRaw+'".');continue;}
+    names.push(displayName);times.push(t);
+  }
+  if(errors.length){rtShowError(errors.join('<br>'));return;}
+  if(!times.length){rtShowError('Please enter at least one level and time.');return;}
+  for(var i=1;i<times.length;i++){
+    if(times[i]<=times[i-1]){
+      timeEls[i].style.borderColor='var(--accent2)';
+      rtShowError('Row '+(i+1)+' ('+names[i]+'): split time must be greater than the previous ('+rtFormatTime(times[i-1])+').');
+      return;
+    }
+  }
+  rtLastSegs=times.map(function(t,i){return Math.round((i===0?t:t-times[i-1])*1000)/1000;});
+  rtMedalNames=names.slice();
+  resetMedalViews(['rt-times-out']);
+  document.getElementById('rt-times-out').value=rtLastSegs.map(rtFormatTime).join('\n');
+  document.getElementById('rt-levels-out').value=names.join('\n');
+  document.getElementById('rt-result').style.display='block';
+}
+
+function rtSetFormat(fmt) {
+  rtFmt=fmt;
+  document.getElementById('rt-fmt-plain').classList.toggle('active',fmt==='plain');
+  document.getElementById('rt-fmt-mmss').classList.toggle('active',fmt==='mmss');
+  if(rtLastSegs.length)document.getElementById('rt-times-out').value=rtLastSegs.map(rtFormatTime).join('\n');
+  refreshMedalViews();
+}
+
+function rtCopy(id,btn){
+  var val=document.getElementById(id).value; if(!val)return;
+  navigator.clipboard.writeText(val).then(function(){
+    var orig=btn.textContent;btn.textContent='COPIED';
+    setTimeout(function(){btn.textContent=orig;},1500);
+  });
+}
+
+function rtShowError(msg){var el=document.getElementById('rt-error');el.innerHTML=msg;el.style.display='block';}
+function rtClearError(){var el=document.getElementById('rt-error');el.innerHTML='';el.style.display='none';}
+function rtClearResults(){
+  document.getElementById('rt-result').style.display='none';
+  document.getElementById('rt-times-out').value='';
+  document.getElementById('rt-levels-out').value='';
+  rtLastSegs=[];
+}
+function rtEsc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ════════════════════════════════════════════════════════════════════════════
+// COMMUNITY MEDALS
+// ════════════════════════════════════════════════════════════════════════════
+var MEDAL_DATA      = null;   // keyed by code name (uppercase), value: [emerald_ms, amethyst_ms, sapphire_ms]
+var MEDAL_CACHE_KEY = 'rsf_medals_data';
+var MEDAL_TS_KEY    = 'rsf_medals_ts';
+var MEDAL_TTL       = 86400000; // 24 hours in ms
+var MEDALS_URL      = 'https://api.github.com/repos/Faustas156/NeonLite/contents/Resources/communitymedals.json';
+
+// Level name arrays for each output — set when splits are generated
+var spLevelNames  = [];
+var stdLevelNames = [];
+// Medal view active state per output id
+var medalViewActive = {};
+
+function loadMedalData() {
+  var now = Date.now();
+  try {
+    var ts   = parseInt(localStorage.getItem(MEDAL_TS_KEY) || '0');
+    var data = localStorage.getItem(MEDAL_CACHE_KEY);
+    if (data && (now - ts) < MEDAL_TTL) {
+      MEDAL_DATA = JSON.parse(data);
+      console.log('[medals] loaded from cache');
+      return;
+    }
+  } catch(e) {}
+  // Fetch fresh via GitHub Contents API (has CORS headers browsers can access)
+  fetch(MEDALS_URL)
+    .then(function(r){ return r.json(); })
+    .then(function(wrapper) {
+      // Contents API returns { content: '<base64>', encoding: 'base64', ... }
+      var jsonStr;
+      if (wrapper.content && wrapper.encoding === 'base64') {
+        jsonStr = atob(wrapper.content.replace(/\n/g, ''));
+      } else {
+        throw new Error('unexpected API response format');
+      }
+      var json = JSON.parse(jsonStr);
+      MEDAL_DATA = json;
+      try {
+        localStorage.setItem(MEDAL_CACHE_KEY, JSON.stringify(json));
+        localStorage.setItem(MEDAL_TS_KEY, Date.now().toString());
+      } catch(e) {}
+      console.log('[medals] fetched from GitHub Contents API, ' + Object.keys(json).length + ' entries');
+    })
+    .catch(function(e){ console.warn('[medals] fetch failed:', e); });
+}
+loadMedalData();
+
+// Given a display level name and a time string, return medal class or ''
+function getMedalClass(levelName, timeStr) {
+  if (!MEDAL_DATA || !levelName || !timeStr) return '';
+  // Resolve level name to code name via alias map
+  var q = levelName.toLowerCase().trim();
+  var codeName = null;
+  // Search aliases for a key that maps to this level name
+  var aliasKeys = Object.keys(LEVEL_ALIASES);
+  for (var i = 0; i < aliasKeys.length; i++) {
+    if (LEVEL_ALIASES[aliasKeys[i]] === q) {
+      codeName = aliasKeys[i].toUpperCase();
+      break;
+    }
+  }
+  if (!codeName) return '';
+  var thresholds = MEDAL_DATA[codeName];
+  if (!thresholds || thresholds.length < 3) return '';
+  // Parse time to seconds
+  var secs = parseSplitTimeToSecs(timeStr);
+  if (secs === null) return '';
+  var ms = secs * 1000;
+  // thresholds: [emerald_ms, amethyst_ms, sapphire_ms] — sapphire is lowest (hardest)
+  if (ms <= thresholds[2]) return 'medal-sapphire';
+  if (ms <= thresholds[1]) return 'medal-amethyst';
+  if (ms <= thresholds[0]) return 'medal-emerald';
+  return '';
+}
+
+// Render a medal view for a given output
+// times: array of formatted time strings
+// levelNames: array of level name strings (parallel to times)
+// divId: id of the .medal-view div
+function renderMedalView(divId, times, levelNames) {
+  var div = document.getElementById(divId);
+  if (!div) return;
+  var html = '';
+  for (var i = 0; i < times.length; i++) {
+    var t    = times[i] || '';
+    var name = levelNames[i] || '';
+    var cls  = getMedalClass(name, t);
+    var color = cls === 'medal-sapphire' ? '#4fc3f7'
+              : cls === 'medal-amethyst' ? '#ce93d8'
+              : cls === 'medal-emerald'  ? '#81c784'
+              : '#ffe066';
+    html += '<span style="color:' + color + ';">' + escHtmlMedal(t) + '</span>';
+  }
+  div.innerHTML = html;
+}
+
+function escHtmlMedal(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function toggleMedalView(taId, btnId) {
+  var ta   = document.getElementById(taId);
+  var div  = document.getElementById(taId + '-medal');
+  var btn  = document.getElementById(btnId);
+  if (!ta || !div) return;
+  var active = !medalViewActive[taId];
+  medalViewActive[taId] = active;
+  if (active) {
+    // Populate medal div from current textarea value
+    var times = ta.value.split('\n');
+    var names = getMedalNamesForOutput(taId);
+    renderMedalView(taId + '-medal', times, names);
+    ta.style.display  = 'none';
+    div.style.display = 'block';
+    if (btn) { btn.classList.add('active'); btn.textContent = 'MEDALS ON'; }
+  } else {
+    ta.style.display  = '';
+    div.style.display = 'none';
+    if (btn) { btn.classList.remove('active'); btn.textContent = 'MEDALS'; }
+  }
+}
+
+// Return the parallel level names array for a given output textarea id
+function getMedalNamesForOutput(taId) {
+  if (taId === 'splits-gold-out' || taId === 'splits-seg-out') return spLevelNames;
+  if (taId === 'std-gold-out'    || taId === 'std-seg-out')    return stdLevelNames;
+  if (taId === 'rt-times-out')   return rtMedalNames;
+  return [];
+}
+
+// Re-render active medal views after format change or recalculation
+function refreshMedalViews() {
+  var ids = ['splits-gold-out','splits-seg-out','std-gold-out','std-seg-out','rt-times-out'];
+  ids.forEach(function(taId) {
+    if (medalViewActive[taId]) {
+      var ta = document.getElementById(taId);
+      if (ta) {
+        var times = ta.value.split('\n');
+        var names = getMedalNamesForOutput(taId);
+        renderMedalView(taId + '-medal', times, names);
+      }
+    }
+  });
+}
+
+// Reset medal views when new splits are generated
+function resetMedalViews(ids) {
+  ids.forEach(function(taId) {
+    medalViewActive[taId] = false;
+    var ta  = document.getElementById(taId);
+    var div = document.getElementById(taId + '-medal');
+    var btn = document.getElementById(taId.replace('-out','') + '-medal-btn') ||
+              document.getElementById('rt-times-medal-btn');
+    if (ta)  ta.style.display  = '';
+    if (div) { div.style.display='none'; div.innerHTML=''; }
+    if (btn) { btn.classList.remove('active'); btn.textContent='MEDALS'; }
+  });
+}
+</script>
+</body>
+</html>

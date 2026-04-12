@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Neon White Rush Toolbox v3.5.4</title>
+<title>Neon White Rush Toolbox v3.6.4</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -146,10 +146,19 @@
   .engine-status.ready  { color:#a78bfa; }
   .engine-status.unavail { color:var(--text-dim); }
   .btn-small.active { background:var(--surface); color:var(--text); border-color:var(--text-dim); }
-  /* Medal colours */
-  .medal-sapphire { color:#4fc3f7 !important; }
+  .btn-small.medal-off { border-color:var(--border); color:var(--text-dim); }
+  .btn-small.medal-on  { background:var(--accent); color:var(--bg); border-color:var(--accent); font-weight:700; }
+  .btn-small.medal-on:hover { background:#00ffb3; border-color:#00ffb3; }
+  /* Medal colours — community medals */
+  .medal-sapphire { color:#363de2 !important; }
   .medal-amethyst { color:#ce93d8 !important; }
   .medal-emerald  { color:#81c784 !important; }
+  /* Medal colours — standard medals */
+  .medal-bronze { color:#cd7f32 !important; }
+  .medal-silver { color:#c0c0c0 !important; }
+  .medal-gold   { color:#ffd700 !important; }
+  .medal-ace    { color:#8de4e0 !important; }
+  .medal-dev    { color:#ff4444 !important; }
   /* Medal view div — mirrors textarea styling */
   .medal-view { display:none; width:100%;background:var(--bg);border:1px solid var(--border);font-family:var(--mono);font-size:16px;padding:12px 16px;resize:vertical;margin-top:6px;overflow-y:auto;line-height:1.2; }
   .medal-view.visible { display:block; }
@@ -379,7 +388,7 @@
       <div id="splits-gold-wrap" style="display:none;">
         <div class="result-label" style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;">
           <span>Gold Splits</span>
-          <button class="btn-small" id="sp-gold-medal-btn" onclick="toggleMedalView('splits-gold-out', 'sp-gold-medal-btn')" style="border-color:#4fc3f7;color:#4fc3f7;">MEDALS</button>
+          <button class="btn-small" id="sp-gold-medal-btn" onclick="toggleMedalView('splits-gold-out', 'sp-gold-medal-btn')">MEDALS OFF</button>
           <button class="btn-small" onclick="copySplits('splits-gold-out')">COPY</button>
         </div>
         <textarea id="splits-gold-out" rows="8" readonly style="width:100%;background:var(--bg);border:1px solid var(--border);color:#ffe066;font-family:var(--mono);font-size:16px;padding:12px 16px;outline:none;resize:vertical;margin-top:6px;"></textarea>
@@ -388,7 +397,7 @@
       <div id="splits-seg-wrap" style="display:none;">
         <div class="result-label" style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;">
           <span>Segment Splits</span>
-          <button class="btn-small" id="sp-seg-medal-btn" onclick="toggleMedalView('splits-seg-out', 'sp-seg-medal-btn')" style="border-color:#4fc3f7;color:#4fc3f7;">MEDALS</button>
+          <button class="btn-small" id="sp-seg-medal-btn" onclick="toggleMedalView('splits-seg-out', 'sp-seg-medal-btn')">MEDALS OFF</button>
           <button class="btn-small" onclick="copySplits('splits-seg-out')">COPY</button>
         </div>
         <textarea id="splits-seg-out" rows="8" readonly style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:16px;padding:12px 16px;outline:none;resize:vertical;margin-top:6px;"></textarea>
@@ -449,7 +458,7 @@
       <div id="std-gold-wrap" style="display:none;">
         <div class="result-label" style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;">
           <span>Gold Splits</span>
-          <button class="btn-small" id="std-gold-medal-btn" onclick="toggleMedalView('std-gold-out', 'std-gold-medal-btn')" style="border-color:#4fc3f7;color:#4fc3f7;">MEDALS</button>
+          <button class="btn-small" id="std-gold-medal-btn" onclick="toggleMedalView('std-gold-out', 'std-gold-medal-btn')">MEDALS OFF</button>
           <button class="btn-small" onclick="copySplits('std-gold-out')">COPY</button>
         </div>
         <textarea id="std-gold-out" rows="8" readonly style="width:100%;background:var(--bg);border:1px solid var(--border);color:#ffe066;font-family:var(--mono);font-size:16px;padding:12px 16px;outline:none;resize:vertical;margin-top:6px;"></textarea>
@@ -458,7 +467,7 @@
       <div id="std-seg-wrap" style="display:none;">
         <div class="result-label" style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;">
           <span>Segment Splits</span>
-          <button class="btn-small" id="std-seg-medal-btn" onclick="toggleMedalView('std-seg-out', 'std-seg-medal-btn')" style="border-color:#4fc3f7;color:#4fc3f7;">MEDALS</button>
+          <button class="btn-small" id="std-seg-medal-btn" onclick="toggleMedalView('std-seg-out', 'std-seg-medal-btn')">MEDALS OFF</button>
           <button class="btn-small" onclick="copySplits('std-seg-out')">COPY</button>
         </div>
         <textarea id="std-seg-out" rows="8" readonly style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:16px;padding:12px 16px;outline:none;resize:vertical;margin-top:6px;"></textarea>
@@ -529,7 +538,7 @@
         <div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
             <span class="result-label">Segment Times</span>
-            <button class="btn-small" id="rt-times-medal-btn" onclick="toggleMedalView('rt-times-out', 'rt-times-medal-btn')" style="border-color:#4fc3f7;color:#4fc3f7;">MEDALS</button>
+            <button class="btn-small" id="rt-times-medal-btn" onclick="toggleMedalView('rt-times-out', 'rt-times-medal-btn')">MEDALS OFF</button>
             <button class="btn-small" onclick="rtCopy('rt-times-out', this)">COPY</button>
           </div>
           <textarea id="rt-times-out" rows="10" readonly style="width:100%;background:var(--bg);border:1px solid var(--border);color:#ffe066;font-family:var(--mono);font-size:16px;padding:12px 16px;outline:none;resize:vertical;"></textarea>
@@ -548,7 +557,7 @@
   </div>
 
 </div>
-<div class="corner-deco">RUSH TOOLBOX // v3.5.4</div>
+<div class="corner-deco">RUSH TOOLBOX // v3.6.4</div>
 <script>
 // ── C# System.Random port ──────────────────────────────────────────────────
 var MBIG = 2147483647;
@@ -2349,6 +2358,109 @@ function rtEsc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>
 // COMMUNITY MEDALS
 // ════════════════════════════════════════════════════════════════════════════
 var MEDAL_DATA      = null;   // keyed by code name (uppercase), value: [emerald_ms, amethyst_ms, sapphire_ms]
+
+// Standard medals — static, baked in (bronze skipped as 900s catch-all)
+// Format: [bronze_us, silver_us, gold_us, ace_us, dev_us]
+var STANDARD_MEDAL_DATA = {
+  "TUT_MOVEMENT": [900000000, 38000000, 31000000, 24000000, 18930000],
+  "TUT_SHOOTINGRANGE": [900000000, 22500000, 17500000, 13000000, 8329000],
+  "SLUGGER": [900000000, 26000000, 19500000, 14000000, 9479000],
+  "TUT_FROG": [900000000, 28000000, 20500000, 15500000, 10210000],
+  "TUT_JUMP": [900000000, 27000000, 23000000, 21000000, 16420000],
+  "GRID_TUT_BALLOON": [900000000, 40000000, 35000000, 30000000, 19059000],
+  "TUT_BOMB2": [900000000, 21000000, 16500000, 13500000, 10449000],
+  "TUT_BOMBJUMP": [900000000, 38000000, 31000000, 27000000, 12750000],
+  "TUT_FASTTRACK": [900000000, 38000000, 33000000, 30000000, 25440000],
+  "GRID_PORT": [900000000, 64000000, 54500000, 37000000, 25319000],
+  "GRID_PAGODA": [900000000, 32500000, 28500000, 23000000, 17540000],
+  "TUT_RIFLE": [900000000, 18000000, 13000000, 11000000, 6139000],
+  "TUT_RIFLEJOCK": [900000000, 25000000, 19500000, 15000000, 10210000],
+  "TUT_DASHENEMY": [900000000, 27000000, 22000000, 18000000, 12420000],
+  "GRID_JUMPDASH": [900000000, 23000000, 16000000, 12500000, 10350000],
+  "GRID_SMACKDOWN": [900000000, 27000000, 22500000, 14000000, 10819000],
+  "GRID_MEATY_BALLOONS": [900000000, 22500000, 19500000, 16500000, 14229000],
+  "GRID_FAST_BALLOON": [900000000, 34000000, 30000000, 26000000, 22450000],
+  "GRID_DRAGON2": [900000000, 32500000, 29500000, 21500000, 15890000],
+  "GRID_DASHDANCE": [900000000, 29000000, 25000000, 22000000, 17069000],
+  "TUT_GUARDIAN": [900000000, 40000000, 35000000, 28500000, 22649000],
+  "TUT_UZI": [900000000, 32000000, 27500000, 19500000, 15340000],
+  "TUT_JUMPER": [900000000, 31000000, 27000000, 24000000, 19159000],
+  "TUT_BOMB": [900000000, 28000000, 24000000, 20500000, 14729000],
+  "GRID_DESCEND": [900000000, 23000000, 20000000, 16000000, 11399000],
+  "GRID_STAMPEROUT": [900000000, 23000000, 19500000, 16500000, 12619000],
+  "GRID_CRUISE": [900000000, 55000000, 48000000, 40000000, 30079000],
+  "GRID_SPRINT": [900000000, 33000000, 29000000, 25000000, 19639000],
+  "GRID_MOUNTAIN": [900000000, 34000000, 28000000, 25000000, 19809000],
+  "GRID_SUPERKINETIC": [900000000, 38000000, 31000000, 24000000, 20100000],
+  "GRID_ARRIVAL": [900000000, 37000000, 32500000, 26000000, 22959000],
+  "FLOATING": [900000000, 46000000, 41000000, 37500000, 33020000],
+  "GRID_BOSS_YELLOW": [900000000, 130000000, 120000000, 97000000, 53680000],
+  "GRID_HOPHOP": [900000000, 31000000, 27000000, 24000000, 19120000],
+  "GRID_RINGER_TUTORIAL": [900000000, 27000000, 23500000, 20500000, 16600000],
+  "GRID_RINGER_EXPLORATION": [900000000, 35500000, 31000000, 28000000, 14319000],
+  "GRID_HOPSCOTCH": [900000000, 27000000, 22000000, 17000000, 13989000],
+  "GRID_BOOM": [900000000, 35000000, 30000000, 24500000, 18450000],
+  "GRID_SNAKE_IN_MY_BOOT": [900000000, 24000000, 18000000, 15000000, 9609000],
+  "GRID_FLOCK": [900000000, 26000000, 22000000, 19000000, 15159000],
+  "GRID_BOMBS_AHOY": [900000000, 26000000, 23000000, 16500000, 9739000],
+  "GRID_ARCS": [900000000, 37000000, 29000000, 25500000, 18620000],
+  "GRID_APARTMENT": [900000000, 46000000, 40000000, 35000000, 23799000],
+  "TUT_TRIPWIRE": [900000000, 50000000, 45500000, 39500000, 24790000],
+  "GRID_TANGLED": [900000000, 36000000, 31500000, 21500000, 13989000],
+  "GRID_HUNT": [900000000, 33000000, 28500000, 25000000, 21979000],
+  "GRID_CANNONS": [900000000, 40000000, 36500000, 32500000, 27649000],
+  "GRID_FALLING": [900000000, 38000000, 32000000, 28000000, 22489000],
+  "TUT_SHOCKER2": [900000000, 49500000, 46000000, 37000000, 28750000],
+  "TUT_SHOCKER": [900000000, 49000000, 45500000, 33500000, 27760000],
+  "GRID_PREPARE": [900000000, 48000000, 42000000, 34500000, 30090000],
+  "GRID_TRIPMAZE": [900000000, 59000000, 53000000, 44000000, 35979000],
+  "GRID_RACE": [900000000, 34000000, 32000000, 28500000, 26139000],
+  "TUT_FORCEFIELD2": [900000000, 36000000, 32500000, 26500000, 19430000],
+  "GRID_SHIELD": [900000000, 38000000, 31000000, 26500000, 18739000],
+  "SA L VAGE2": [900000000, 29000000, 25000000, 19500000, 15449000],
+  "GRID_VERTICAL": [900000000, 48000000, 45000000, 41000000, 26030000],
+  "GRID_MINEFIELD": [900000000, 30000000, 24500000, 22000000, 17559000],
+  "TUT_MIMIC": [900000000, 25000000, 20500000, 14500000, 10700000],
+  "GRID_MIMICPOP": [900000000, 42000000, 37500000, 31500000, 24389000],
+  "GRID_SWARM": [900000000, 29500000, 25000000, 19500000, 11319000],
+  "GRID_SWITCH": [900000000, 37000000, 32500000, 26000000, 20309000],
+  "GRID_TRAPS2": [900000000, 51000000, 46500000, 43500000, 29190000],
+  "TUT_ROCKETJUMP": [900000000, 47000000, 41000000, 27500000, 18139000],
+  "TUT_ZIPLINE": [900000000, 36500000, 31500000, 22000000, 17559000],
+  "GRID_CLIMBANG": [900000000, 44000000, 37000000, 30000000, 23120000],
+  "GRID_ROCKETUZI": [900000000, 72000000, 63000000, 53000000, 46279000],
+  "GRID_CRASHLAND": [900000000, 56000000, 51000000, 41000000, 33220000],
+  "GRID_ESCALATE": [900000000, 54000000, 47500000, 43000000, 34659000],
+  "GRID_SPIDERCLAUS": [900000000, 62000000, 57000000, 48500000, 42209000],
+  "GRID_FIRECRACKER_2": [900000000, 61000000, 55000000, 48500000, 40569000],
+  "GRID_SPIDERMAN": [900000000, 60000000, 52500000, 46000000, 38450000],
+  "GRID_DESTRUCTION": [900000000, 70000000, 62000000, 57000000, 47200000],
+  "GRID_HEAT": [900000000, 61000000, 56500000, 49000000, 28940000],
+  "GRID_BOLT": [900000000, 64000000, 59500000, 48500000, 40189000],
+  "GRID_PON": [900000000, 52000000, 46500000, 41000000, 30760000],
+  "GRID_CHARGE": [900000000, 55000000, 50000000, 45500000, 35430000],
+  "GRID_MIMICFINALE": [900000000, 58000000, 52500000, 42000000, 28270000],
+  "GRID_BARRAGE": [900000000, 58000000, 52000000, 46000000, 36979000],
+  "GRID_1GUN": [900000000, 78000000, 70000000, 58000000, 44979000],
+  "GRID_HECK": [900000000, 54000000, 45000000, 37000000, 24600000],
+  "GRID_ANTFARM": [900000000, 58000000, 52000000, 43500000, 36330000],
+  "GRID_FORTRESS": [900000000, 67000000, 61500000, 49500000, 34810000],
+  "GRID_GODTEMPLE_ENTRY": [900000000, 140000000, 130000000, 120000000, 76500000],
+  "GRID_BOSS_GODSDEATHTEMPLE": [900000000, 290000000, 265000000, 237500000, 147169000],
+  "GRID_EXTERMINATOR": [900000000, 36000000, 32500000, 27000000, 20649000],
+  "GRID_FEVER": [900000000, 36000000, 27000000, 23000000, 17450000],
+  "GRID_SKIPSLIDE": [900000000, 43000000, 39000000, 31000000, 23319000],
+  "GRID_CLOSER": [900000000, 50000000, 44000000, 38000000, 34150000],
+  "GRID_HIKE": [900000000, 50000000, 45000000, 36500000, 22489000],
+  "GRID_SKIP": [900000000, 55000000, 50500000, 43000000, 32430000],
+  "GRID_CEILING": [900000000, 52000000, 47000000, 35500000, 23850000],
+  "GRID_BOOP": [900000000, 68000000, 60000000, 47500000, 33240000],
+  "GRID_TRIPRAP": [900000000, 40000000, 35500000, 25000000, 14319000],
+  "GRID_ZIPRAP": [900000000, 165000000, 140000000, 119980000, 91330000],
+  "GRID_BOSS_RAPTURE": [900000000, 216000000, 192000000, 165000000, 107629000]
+};
+
+
 var MEDAL_CACHE_KEY = 'rsf_medals_data';
 var MEDAL_TS_KEY    = 'rsf_medals_ts';
 var MEDAL_TTL       = 86400000; // 24 hours in ms
@@ -2357,10 +2469,10 @@ var MEDALS_URL      = 'https://api.github.com/repos/Faustas156/NeonLite/contents
 // Level name arrays for each output — set when splits are generated
 var spLevelNames  = [];
 var stdLevelNames = [];
-// Medal view active state per output id
-var medalViewActive = {};
+// Medal view mode per output id: 0=off, 1=community medals, 2=standard medals
+var medalViewMode = {};
 
-// Embedded fallback medal data (as of v3.5.4 — updated from NeonLite communitymedals.json)
+// Embedded fallback medal data (as of v3.6.4 — updated from NeonLite communitymedals.json)
 var MEDAL_FALLBACK = {
   "TUT_MOVEMENT": [18199999,17899999,17699999],
   "TUT_SHOOTINGRANGE": [7249999,6799999,6139999],
@@ -2532,32 +2644,41 @@ function loadMedalData() {
 loadMedalData();
 
 // Given a display level name and a time string, return medal class or ''
-function getMedalClass(levelName, timeStr) {
-  if (!MEDAL_DATA || !levelName || !timeStr) return '';
-  // Resolve level name to code name via alias map
+function resolveLevelCodeName(levelName) {
   var q = levelName.toLowerCase().trim();
-  var codeName = null;
-  // Search aliases for a key that maps to this level name
   var aliasKeys = Object.keys(LEVEL_ALIASES);
   for (var i = 0; i < aliasKeys.length; i++) {
-    if (LEVEL_ALIASES[aliasKeys[i]] === q) {
-      codeName = aliasKeys[i].toUpperCase();
-      break;
-    }
+    if (LEVEL_ALIASES[aliasKeys[i]] === q) return aliasKeys[i].toUpperCase();
   }
+  return null;
+}
+
+function getMedalClass(levelName, timeStr) {
+  // Unified hierarchy lowest→highest: bronze > silver > gold > ace > dev > emerald > amethyst > sapphire
+  if (!levelName || !timeStr) return '';
+  var codeName = resolveLevelCodeName(levelName);
   if (!codeName) return '';
-  var thresholds = MEDAL_DATA[codeName];
-  if (!thresholds || thresholds.length < 3) return '';
-  // Parse time to seconds
   var secs = parseSplitTimeToSecs(timeStr);
   if (secs === null) return '';
-  // thresholds are in microseconds — divide by 1,000,000 to compare against seconds
-  var sapphireSecs = thresholds[2] / 1000000;
-  var amethystSecs = thresholds[1] / 1000000;
-  var emeraldSecs  = thresholds[0] / 1000000;
-  if (secs <= sapphireSecs) return 'medal-sapphire';
-  if (secs <= amethystSecs) return 'medal-amethyst';
-  if (secs <= emeraldSecs)  return 'medal-emerald';
+
+  // Check community medals first (highest tier — sapphire hardest)
+  if (MEDAL_DATA) {
+    var comm = MEDAL_DATA[codeName];
+    if (comm && comm.length >= 3) {
+      if (secs <= comm[2] / 1000000) return 'medal-sapphire';
+      if (secs <= comm[1] / 1000000) return 'medal-amethyst';
+      if (secs <= comm[0] / 1000000) return 'medal-emerald';
+    }
+  }
+  // Check standard medals (dev hardest among these)
+  var std = STANDARD_MEDAL_DATA[codeName];
+  if (std && std.length >= 5) {
+    if (secs <= std[4] / 1000000) return 'medal-dev';
+    if (secs <= std[3] / 1000000) return 'medal-ace';
+    if (secs <= std[2] / 1000000) return 'medal-gold';
+    if (secs <= std[1] / 1000000) return 'medal-silver';
+    if (secs <= std[0] / 1000000) return 'medal-bronze';
+  }
   return '';
 }
 
@@ -2573,9 +2694,14 @@ function renderMedalView(divId, times, levelNames) {
     var t    = times[i] || '';
     var name = levelNames[i] || '';
     var cls  = getMedalClass(name, t);
-    var color = cls === 'medal-sapphire' ? '#4fc3f7'
+    var color = cls === 'medal-sapphire' ? '#363de2'
               : cls === 'medal-amethyst' ? '#ce93d8'
               : cls === 'medal-emerald'  ? '#81c784'
+              : cls === 'medal-dev'      ? '#ff4444'
+              : cls === 'medal-ace'      ? '#8de4e0'
+              : cls === 'medal-gold'     ? '#ffd700'
+              : cls === 'medal-silver'   ? '#c0c0c0'
+              : cls === 'medal-bronze'   ? '#cd7f32'
               : '#ffe066';
     html += '<span style="color:' + color + ';">' + escHtmlMedal(t) + '</span>';
   }
@@ -2591,22 +2717,20 @@ function toggleMedalView(taId, btnId) {
   var div  = document.getElementById(taId + '-medal');
   var btn  = document.getElementById(btnId);
   if (!ta || !div) return;
-  var active = !medalViewActive[taId];
-  medalViewActive[taId] = active;
-  if (active) {
-    // Populate medal div from current textarea value
+  var on = !medalViewMode[taId];
+  medalViewMode[taId] = on;
+  if (!on) {
+    ta.style.display  = '';
+    div.style.display = 'none';
+    if (btn) { btn.classList.remove('active','medal-on'); btn.classList.add('medal-off'); btn.textContent = 'MEDALS OFF'; }
+  } else {
     var times = ta.value.split('\n');
     var names = getMedalNamesForOutput(taId);
     renderMedalView(taId + '-medal', times, names);
-    // Match div height to current textarea height so layout doesn't shift
     div.style.height = ta.offsetHeight ? ta.offsetHeight + 'px' : '';
     ta.style.display  = 'none';
     div.style.display = 'block';
-    if (btn) { btn.classList.add('active'); btn.textContent = 'MEDALS ON'; }
-  } else {
-    ta.style.display  = '';
-    div.style.display = 'none';
-    if (btn) { btn.classList.remove('active'); btn.textContent = 'MEDALS'; }
+    if (btn) { btn.classList.remove('active','medal-off'); btn.classList.add('medal-on'); btn.textContent = 'MEDALS ON'; }
   }
 }
 
@@ -2622,7 +2746,7 @@ function getMedalNamesForOutput(taId) {
 function refreshMedalViews() {
   var ids = ['splits-gold-out','splits-seg-out','std-gold-out','std-seg-out','rt-times-out'];
   ids.forEach(function(taId) {
-    if (medalViewActive[taId]) {
+    if (medalViewMode[taId]) {
       var ta = document.getElementById(taId);
       if (ta) {
         var times = ta.value.split('\n');
@@ -2636,14 +2760,14 @@ function refreshMedalViews() {
 // Reset medal views when new splits are generated
 function resetMedalViews(ids) {
   ids.forEach(function(taId) {
-    medalViewActive[taId] = false;
+    medalViewMode[taId] = false;
     var ta  = document.getElementById(taId);
     var div = document.getElementById(taId + '-medal');
     var btn = document.getElementById(taId.replace('-out','') + '-medal-btn') ||
               document.getElementById('rt-times-medal-btn');
     if (ta)  ta.style.display  = '';
     if (div) { div.style.display='none'; div.innerHTML=''; }
-    if (btn) { btn.classList.remove('active'); btn.textContent='MEDALS'; }
+    if (btn) { btn.classList.remove('active','medal-on'); btn.classList.add('medal-off'); btn.textContent='MEDALS OFF'; }
   });
 }
 </script>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Neon White Rush Toolbox v3.6.4</title>
+<title>Neon White Rush Toolbox v3.6.5</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -557,7 +557,7 @@
   </div>
 
 </div>
-<div class="corner-deco">RUSH TOOLBOX // v3.6.4</div>
+<div class="corner-deco">RUSH TOOLBOX // v3.6.5</div>
 <script>
 // ── C# System.Random port ──────────────────────────────────────────────────
 var MBIG = 2147483647;
@@ -2472,7 +2472,7 @@ var stdLevelNames = [];
 // Medal view mode per output id: 0=off, 1=community medals, 2=standard medals
 var medalViewMode = {};
 
-// Embedded fallback medal data (as of v3.6.4 — updated from NeonLite communitymedals.json)
+// Embedded fallback medal data (as of v3.6.5 — updated from NeonLite communitymedals.json)
 var MEDAL_FALLBACK = {
   "TUT_MOVEMENT": [18199999,17899999,17699999],
   "TUT_SHOOTINGRANGE": [7249999,6799999,6139999],
@@ -2647,10 +2647,15 @@ loadMedalData();
 function resolveLevelCodeName(levelName) {
   var q = levelName.toLowerCase().trim();
   var aliasKeys = Object.keys(LEVEL_ALIASES);
+  var shorthand = null;
   for (var i = 0; i < aliasKeys.length; i++) {
-    if (LEVEL_ALIASES[aliasKeys[i]] === q) return aliasKeys[i].toUpperCase();
+    if (LEVEL_ALIASES[aliasKeys[i]] === q) {
+      // Prefer code-name style keys (contain underscore) over shorthand aliases
+      if (aliasKeys[i].indexOf('_') !== -1) return aliasKeys[i].toUpperCase();
+      if (!shorthand) shorthand = aliasKeys[i];
+    }
   }
-  return null;
+  return shorthand ? shorthand.toUpperCase() : null;
 }
 
 function getMedalClass(levelName, timeStr) {

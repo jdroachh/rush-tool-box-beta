@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Neon White Rush Toolbox v3.8.6</title>
+<title>Neon White Rush Toolbox v3.8.8</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -329,12 +329,12 @@
         </div>
         <div id="hell-minscore-wrap" style="display:none;margin-top:12px;">
           <label class="checkbox-row" for="hell-minscore-checkbox" style="margin-bottom:6px;">
-            <input type="checkbox" id="hell-minscore-checkbox" onchange="onMinScoreToggle()">
+            <input type="checkbox" id="hell-minscore-checkbox" onchange="onMinScoreToggle()" checked>
             <span style="font-size:12px;letter-spacing:2px;text-transform:uppercase;">Minimum Score Threshold</span>
           </label>
-          <div id="hell-minscore-inner" style="display:none;margin-top:8px;">
-            <input type="number" id="hell-minscore" value="70" min="0" max="100" style="width:80px;">
-            <div class="hint" style="margin-top:4px;">Only return seeds scoring at or above this threshold. Default: 70.</div>
+          <div id="hell-minscore-inner" style="display:block;margin-top:8px;">
+            <input type="number" id="hell-minscore" value="60" min="0" max="100" style="width:80px;">
+            <div class="hint" style="margin-top:4px;">Only return seeds scoring at or above this threshold. Default: 60.</div>
           </div>
         </div>
       </div>
@@ -543,7 +543,8 @@
       <label class="section-label">Input Mode</label>
       <div style="display:flex;gap:0;">
         <button class="btn-small active" id="rt-mode-seed-btn" onclick="rtSetMode('seed')" style="flex:1;padding:10px;font-size:13px;">Load by Seed</button>
-        <button class="btn-small" id="rt-mode-manual-btn" onclick="rtSetMode('manual')" style="flex:1;padding:10px;font-size:13px;border-left:none;">Enter Manually</button>
+        <button class="btn-small" id="rt-mode-manual-btn" onclick="rtSetMode('manual')" style="flex:1;padding:10px;font-size:13px;">Enter Manually</button>
+        <button class="btn-small" id="rt-mode-standard-btn" onclick="rtSetMode('standard')" style="flex:1;padding:10px;font-size:13px;">Standard Order</button>
       </div>
     </div>
 
@@ -608,7 +609,7 @@
   </div>
 
 </div>
-<div class="corner-deco">RUSH TOOLBOX // v3.8.6</div>
+<div class="corner-deco">RUSH TOOLBOX // v3.8.8</div>
 <script>
 // ── C# System.Random port ──────────────────────────────────────────────────
 var MBIG = 2147483647;
@@ -1357,6 +1358,8 @@ function startSearch() {
 
   searching = true;
   hellTopN = []; hellLastRender = 0;
+  hellTargetSet = targetSet; hellForceIdx = forceFirstEnabled ? forceFirstIdx : -1;
+  hellAvoidSet = avoidEnabled ? avoidSet : {}; hellAvoidDepth = avoidEnabled ? avoidDepthVal : 0;
   document.getElementById('search-btn').style.display = 'none';
   document.getElementById('stop-btn').style.display   = 'block';
   document.getElementById('search-result').classList.remove('visible');
@@ -2331,16 +2334,27 @@ var RT_ALIASES = {
 function onRtRushChange() {
   rtRush = document.getElementById('rt-rush').value;
   rtClearResults(); rtClearError();
-  if (rtMode==='manual') rtBuildManualRows(); else rtHideLevels();
+  if (rtMode==='manual') rtBuildManualRows();
+  else if (rtMode==='standard') rtLoadStandardOrder();
+  else rtHideLevels();
 }
 
 function rtSetMode(mode) {
   rtMode = mode;
   document.getElementById('rt-mode-seed-btn').classList.toggle('active', mode==='seed');
   document.getElementById('rt-mode-manual-btn').classList.toggle('active', mode==='manual');
+  document.getElementById('rt-mode-standard-btn').classList.toggle('active', mode==='standard');
   document.getElementById('rt-seed-panel').style.display = mode==='seed'?'block':'none';
   rtClearResults(); rtClearError();
-  if (mode==='manual') rtBuildManualRows(); else rtHideLevels();
+  if (mode==='manual') rtBuildManualRows();
+  else if (mode==='standard') rtLoadStandardOrder();
+  else rtHideLevels();
+}
+
+function rtLoadStandardOrder() {
+  var levels = RUSH_LEVELS[rtRush];
+  // Standard order is just the levels array in their natural index order
+  rtBuildSeedRows(levels.slice());
 }
 
 function rtHideLevels() {
@@ -2641,7 +2655,7 @@ var stdLevelNames = [];
 // Medal view mode per output id: 0=off, 1=community medals, 2=standard medals
 var medalViewMode = {};
 
-// Embedded fallback medal data (as of v3.8.6 — updated from NeonLite communitymedals.json)
+// Embedded fallback medal data (as of v3.8.8 — updated from NeonLite communitymedals.json)
 var MEDAL_FALLBACK = {
   "TUT_MOVEMENT": [18199999,17899999,17699999,17599999,17549999],
   "TUT_SHOOTINGRANGE": [7249999,6799999,6139999,5799999,5599999],
@@ -3049,7 +3063,8 @@ function scoreHpSpacing(order) {
 }
 
 var hellModeEnabled = false;
-var hellTopN = [];           // rolling top-N buffer for standalone mode
+var hellTopN = [];
+var hellTargetSet = {}, hellForceIdx = -1, hellAvoidSet = {}, hellAvoidDepth = 0;           // rolling top-N buffer for standalone mode
 var hellLastRender = 0;      // timestamp of last re-render (throttle)
 var hellWarningDismissed = (localStorage.getItem('rsf_hell_warned') === '1');
 
@@ -3077,7 +3092,7 @@ function hellRenderTopN() {
   var list = document.getElementById('multi-result-list');
   list.innerHTML = '';
   for (var i = 0; i < hellTopN.length; i++) {
-    addSeedResult(hellTopN[i].seed, hellTopN[i].order, {}, i + 1, -1, {}, 0);
+    addSeedResult(hellTopN[i].seed, hellTopN[i].order, hellTargetSet, i + 1, hellForceIdx, hellAvoidSet, hellAvoidDepth);
   }
   document.getElementById('search-result-label').textContent =
     'Best ' + hellTopN.length + ' seed' + (hellTopN.length > 1 ? 's' : '') + ' so far';
